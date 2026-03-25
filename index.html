@@ -305,6 +305,39 @@ body{background:var(--bg);font-family:'Nunito',sans-serif;color:var(--ink);min-h
   </div>
 </div>
 
+<!-- ════════ SCREEN: SOLO GAME ═════════════════ -->
+<div class="screen" id="screen-game">
+  <div class="game-nav">
+    <div class="nav-back" onclick="if(sg.placed===0||confirm('Avsluta spelet?'))nav('screen-home')">‹</div>
+    <div class="nav-title">Enspelarläge</div>
+    <button class="btn secondary" style="width:auto;padding:7px 14px;font-size:.75rem;box-shadow:none;" onclick="if(sg.placed===0||confirm('Avsluta spelet?'))nav('screen-home')">Avsluta</button>
+  </div>
+  <div class="topbar">
+    <div class="topbar-card letter-card">
+      <div class="topbar-label">Bokstav</div>
+      <div class="letter-big" id="current-letter">?</div>
+    </div>
+    <div class="topbar-card"><div class="topbar-label">Poäng</div><div class="topbar-value" id="total-score">0</div></div>
+    <div class="topbar-card"><div class="topbar-label">Kvar</div><div class="topbar-value" id="tiles-left">25</div></div>
+  </div>
+  <div class="grid-outer">
+    <div class="col-labels-row" id="col-labels-row"></div>
+    <div class="grid-rows" id="grid-rows"></div>
+  </div>
+</div>
+
+<!-- ════════ SCREEN: SOLO RESULT ═══════════════ -->
+<div class="screen" id="screen-result">
+  <div class="result-header">
+    <div class="result-title">🎉 Spelet slut!</div>
+    <div class="result-score" id="result-score">0</div>
+    <div class="result-subtitle" id="result-subtitle">poäng</div>
+  </div>
+  <div class="result-grid-outer" id="result-grid-outer"></div>
+  <button class="btn-play-again" onclick="startSolo()">↺ Spela igen</button>
+  <button class="btn secondary" onclick="nav('screen-home')">⌂ Hem</button>
+</div>
+
 <!-- ════════ SCREEN: MULTIPLAYER LOBBY ═════════ -->
 <div class="screen" id="screen-mp-lobby">
   <div class="nav"><div class="nav-back" onclick="nav('screen-play')">‹</div><div class="nav-title">Multiplayer</div></div>
