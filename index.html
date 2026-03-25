@@ -1198,6 +1198,8 @@ function fullResultGrid(data, title, accentColor){
   h+='</div></div>';
   return h;
 }
+
+function leaveMultiplayer(){
   if(confirm('Lämna pågående match?')){
     if(mp.unsub){mp.unsub();mp.unsub=null;}
     document.getElementById('lp-overlay').style.display='none';
