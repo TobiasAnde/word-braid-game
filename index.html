@@ -651,7 +651,7 @@ function endSolo(){
    3. Varje spelare placerar bokstaven på sin bräda (hasPlaced sätts)
    4. När alla hasPlaced=true → nästa chooser i turordning → ny runda
 ════════════════════════════════════════ */
-var mp={code:null,role:null,myKey:null,myState:null,unsub:null,waitingForPlace:false,overlayShown:false};
+var mp={code:null,role:null,myKey:null,myState:null,unsub:null,waitingForPlace:false,overlayShown:false,placing:false,currentLetter:null};
 
 function emptyPD(name){
   return {
@@ -788,12 +788,15 @@ function onGU(gs){
     if(!mp.overlayShown){mp.overlayShown=true;showChooserOverlay(gs.options);}
   } else if(letter && !myData.hasPlaced){
     // I need to place this letter
+    mp.currentLetter = letter; // cache locally — no need for fbGet in placeMp
     banner.className='turn-banner your-turn';
     turnTxt.textContent='✅ Placera bokstaven '+letter+' på din bräda!';
     var lEl=document.getElementById('mp-current-letter');
     if(lEl){lEl.textContent=letter;lEl.style.animation='none';void lEl.offsetWidth;lEl.style.animation='';}
     document.getElementById('lp-overlay').style.display='none';
-    mp.overlayShown=false;mp.waitingForPlace=true;
+    mp.overlayShown=false;
+    // Only enable placing if not already mid-place
+    if(!mp.placing) mp.waitingForPlace=true;
     tx('mp-total-score',myData.score||0);
     tx('mp-tiles-left',25-(myData.placed||0));
   } else if(letter && myData.hasPlaced){
@@ -847,54 +850,64 @@ function showChooserOverlay(options){
 function confirmLetter(letter){
   document.getElementById('lp-overlay').style.display='none';
   mp.overlayShown=false;
-  // Write chosen letter, clear options, reset all hasPlaced
-  fbGet('games/'+mp.code).then(function(gs){
-    if(!gs)return;
-    // Reset hasPlaced for everyone
-    var players=gs.players||{};
-    Object.keys(players).forEach(function(k){players[k].hasPlaced=false;});
-    return Promise.all([
-      fbSet('games/'+mp.code+'/currentLetter',letter),
-      fbSet('games/'+mp.code+'/options',null),
-      fbSet('games/'+mp.code+'/players',players)
-    ]);
-  });
+  // Reset hasPlaced for everyone by writing directly — no fbGet race
+  // We write currentLetter and clear options; hasPlaced reset handled per-player
+  fbSet('games/'+mp.code+'/currentLetter',letter)
+    .then(function(){ return fbSet('games/'+mp.code+'/options',null); })
+    .then(function(){
+      // Reset hasPlaced for all players
+      return fbGet('games/'+mp.code+'/players');
+    }).then(function(players){
+      if(!players)return;
+      var writes=[];
+      Object.keys(players).forEach(function(k){
+        writes.push(fbSet('games/'+mp.code+'/players/'+k+'/hasPlaced',false));
+      });
+      return Promise.all(writes);
+    });
 }
 
 /* ── Player places letter on their board ── */
 function placeMp(row,col){
+  // Guard: must be waiting, cell empty, not already mid-place
   if(!mp.waitingForPlace)return;
+  if(mp.placing)return;
   if(mp.myState.grid[row][col]!=='')return;
-  fbGet('games/'+mp.code).then(function(gs){
-    if(!gs)return;
-    var myData=gs.players[mp.myKey];
-    if(!myData||myData.hasPlaced)return;
-    var letter=gs.currentLetter;
-    if(!letter)return;
-    // Update local state
-    mp.myState.grid[row][col]=letter;
-    mp.myState.placed++;
-    mp.myState.lineScores=(myData.lineScores||new Array(10).fill(0)).slice();
-    mp.myState.linesBest=(myData.linesBest||new Array(10).fill(null)).map(function(b){return b?Object.assign({},b):null;});
-    var nw=calcSc(mp.myState);
-    // Animate cell
-    var cell=document.getElementById('mpcell-'+row+'-'+col);
-    if(cell){cell.textContent=letter;cell.classList.add('filled','placing');setTimeout(function(){cell.classList.remove('placing');},420);}
-    doHL(mp.myState,'mpcell-');doLbls(mp.myState,'mprow-label-','mpcol-label-');
-    nw.forEach(function(w){var i=mp.myState.foundWords.findIndex(function(f){return f.key===w.key;});if(i!==-1)mp.myState.foundWords.splice(i,1);mp.myState.foundWords.push(w);});
-    tx('mp-total-score',mp.myState.score);
-    tx('mp-tiles-left',25-mp.myState.placed);
-    mp.waitingForPlace=false;
-    // Write my updated data to Firebase
-    var updatedMe=Object.assign({},myData,{
-      grid:mp.myState.grid.map(function(r){return r.slice();}),
-      score:mp.myState.score,placed:mp.myState.placed,hasPlaced:true,
-      lineScores:mp.myState.lineScores.slice(),
-      linesBest:mp.myState.linesBest.map(function(b){return b?Object.assign({},b):null;})
-    });
-    return fbSet('games/'+mp.code+'/players/'+mp.myKey,updatedMe).then(function(){
-      return fbGet('games/'+mp.code);
-    }).then(function(fresh){
+  var letter=mp.currentLetter;
+  if(!letter)return;
+
+  // Immediately lock to prevent double-clicks / race
+  mp.placing=true;
+  mp.waitingForPlace=false;
+
+  // Update local state optimistically
+  mp.myState.grid[row][col]=letter;
+  mp.myState.placed++;
+  var nw=calcSc(mp.myState);
+
+  // Animate cell immediately
+  var cell=document.getElementById('mpcell-'+row+'-'+col);
+  if(cell){cell.textContent=letter;cell.classList.add('filled','placing');setTimeout(function(){cell.classList.remove('placing');},420);}
+  doHL(mp.myState,'mpcell-');doLbls(mp.myState,'mprow-label-','mpcol-label-');
+  nw.forEach(function(w){var i=mp.myState.foundWords.findIndex(function(f){return f.key===w.key;});if(i!==-1)mp.myState.foundWords.splice(i,1);mp.myState.foundWords.push(w);});
+  tx('mp-total-score',mp.myState.score);
+  tx('mp-tiles-left',25-mp.myState.placed);
+
+  // Now write to Firebase
+  var updatedMe={
+    name:(loadP().name)||'Spelaren',
+    grid:mp.myState.grid.map(function(r){return r.slice();}),
+    score:mp.myState.score,
+    placed:mp.myState.placed,
+    hasPlaced:true,
+    lineScores:mp.myState.lineScores.slice(),
+    linesBest:mp.myState.linesBest.map(function(b){return b?Object.assign({},b):null;})
+  };
+
+  fbSet('games/'+mp.code+'/players/'+mp.myKey, updatedMe)
+    .then(function(){ return fbGet('games/'+mp.code); })
+    .then(function(fresh){
+      mp.placing=false;
       if(!fresh)return;
       // Check if ALL players have placed
       var allPlaced=Object.keys(fresh.players||{}).every(function(k){return fresh.players[k].hasPlaced;});
@@ -913,8 +926,12 @@ function placeMp(row,col){
         fbSet('games/'+mp.code+'/options',newOptions),
         fbSet('games/'+mp.code+'/round',(fresh.round||0)+1)
       ]);
+    }).catch(function(e){
+      // On error, unlock so player can try again
+      mp.placing=false;
+      mp.waitingForPlace=true;
+      console.error('placeMp error:',e);
     });
-  });
 }
 
 function syncMyGrid(myData){
@@ -977,6 +994,7 @@ function leaveMultiplayer(){
     document.getElementById('lp-overlay').style.display='none';
     if(mp.code)fbSet('games/'+mp.code+'/status','done');
     mp.code=null;mp.role=null;mp.myKey=null;mp.myState=null;
+    mp.placing=false;mp.waitingForPlace=false;mp.currentLetter=null;
     document.getElementById('create-area').style.display='block';
     document.getElementById('code-display-area').style.display='none';
     nav('screen-home');
