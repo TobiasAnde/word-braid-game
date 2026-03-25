@@ -177,27 +177,37 @@ body{background:var(--bg);font-family:'Nunito',sans-serif;color:var(--ink);min-h
 .waiting-sub{font-size:.8rem;color:var(--muted);font-weight:600;margin-top:6px;}
 
 /* ── MULTIPLAYER GAME ────────────────────────── */
-/* Letter picker (choose 1 of 3 for opponent) */
+/* Letter picker — bottom sheet, board stays visible */
 .letter-picker-overlay{
-  position:fixed;inset:0;background:rgba(30,27,75,.85);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  z-index:100;gap:16px;backdrop-filter:blur(6px);
-  animation:fadeIn .2s ease;
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--ink);
+  border-radius:20px 20px 0 0;
+  display:flex;flex-direction:column;align-items:center;
+  z-index:100;gap:10px;
+  padding:16px 20px 32px;
+  box-shadow:0 -8px 40px rgba(30,27,75,.5);
+  animation:slideUp .25s cubic-bezier(.18,.89,.32,1.1);
+}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+/* Drag handle */
+.letter-picker-overlay::before{
+  content:'';display:block;width:40px;height:4px;
+  background:rgba(255,255,255,.25);border-radius:99px;margin-bottom:4px;
 }
 @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
-.lp-title{color:#fff;font-size:1rem;font-weight:800;letter-spacing:.05em;}
-.lp-subtitle{color:rgba(255,255,255,.65);font-size:.8rem;font-weight:600;}
-.lp-options{display:flex;gap:16px;}
+.lp-title{color:#fff;font-size:.95rem;font-weight:800;letter-spacing:.03em;text-align:center;}
+.lp-subtitle{color:rgba(255,255,255,.6);font-size:.75rem;font-weight:600;text-align:center;}
+.lp-options{display:flex;gap:14px;}
 .lp-btn{
-  width:80px;height:80px;border-radius:16px;
+  width:72px;height:72px;border-radius:16px;
   background:#fff;border:3px solid transparent;
   display:flex;align-items:center;justify-content:center;
-  font-size:2.2rem;font-weight:900;color:var(--ink);
+  font-size:2rem;font-weight:900;color:var(--ink);
   cursor:pointer;transition:transform .1s,border-color .15s,box-shadow .15s;
-  box-shadow:0 4px 0 rgba(0,0,0,.2);
+  box-shadow:0 4px 0 rgba(0,0,0,.35);
 }
-.lp-btn:hover{border-color:var(--pill);transform:translateY(-3px);box-shadow:0 7px 0 rgba(99,102,241,.3);}
-.lp-btn:active{transform:translateY(1px);box-shadow:0 2px 0 rgba(0,0,0,.2);}
+.lp-btn:hover{border-color:#a78bfa;transform:translateY(-3px);box-shadow:0 7px 0 rgba(99,102,241,.4);}
+.lp-btn:active{transform:translateY(1px);box-shadow:0 2px 0 rgba(0,0,0,.35);}
 
 /* Your-turn / opponent-turn banner */
 .turn-banner{
@@ -234,6 +244,7 @@ body{background:var(--bg);font-family:'Nunito',sans-serif;color:var(--ink);min-h
 
 /* Versus result */
 .vs-result{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;margin-bottom:20px;text-align:center;}
+.vs-result>[style*="grid-column"]{grid-column:1/-1;}
 .vs-player{display:flex;flex-direction:column;align-items:center;gap:6px;}
 .vs-avatar{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;box-shadow:0 0 0 3px white,0 0 0 5px var(--border);}
 .vs-name{font-size:.8rem;font-weight:800;}
@@ -414,8 +425,7 @@ body{background:var(--bg);font-family:'Nunito',sans-serif;color:var(--ink);min-h
 <div class="screen" id="screen-mp-result">
   <div class="nav"><div class="nav-back" onclick="nav('screen-home')">‹</div><div class="nav-title">Resultat</div></div>
   <div class="vs-result" id="vs-result"></div>
-  <div class="section-label">Jämför brädorna</div>
-  <div class="compare-grids" id="compare-grids"></div>
+  <div id="result-boards"></div>
   <button class="btn-play-again" onclick="nav('screen-mp-lobby')">⚡ Spela igen</button>
   <button class="btn secondary" onclick="nav('screen-home')">⌂ Hem</button>
 </div>
@@ -984,7 +994,6 @@ function showMpResult(gs){
   var players=gs.players||{};
   var myScore=(players[mp.myKey]&&players[mp.myKey].score)||0;
   var myName=(players[mp.myKey]&&players[mp.myKey].name)||'Du';
-  // Find winner
   var winner=null,winScore=-1;
   Object.keys(players).forEach(function(k){if((players[k].score||0)>winScore){winScore=players[k].score||0;winner=k;}});
   var won=(winner===mp.myKey);
@@ -998,30 +1007,197 @@ function showMpResult(gs){
   p.history=p.history||[];
   p.history.push({score:myScore,words:(mp.myState.foundWords&&mp.myState.foundWords.length)||0,date:new Date().toLocaleDateString('sv-SE'),mp:true,result:draw?'oavgjort':won?'vinst':'förlust'});
   if(p.history.length>50)p.history=p.history.slice(-50);saveP(p);refreshHomeStats();
-  // VS card
-  var bd=won?'<span class="win-badge">Vinst 🏆</span>':draw?'<span class="draw-badge">Oavgjort 🤝</span>':'<span class="lose-badge">Förlust</span>';
-  var ob=(!won&&!draw)?'<span class="win-badge">Vinst 🏆</span>':draw?'<span class="draw-badge">Oavgjort 🤝</span>':'<span class="lose-badge">Förlust</span>';
-  document.getElementById('vs-result').innerHTML=
-    '<div class="vs-player '+(won||draw?'vs-winner':'')+'"><div class="vs-avatar" style="background:linear-gradient(135deg,var(--pill),#a78bfa);">😎</div><div class="vs-name">'+myName+'</div><div class="vs-pts">'+myScore+'p</div>'+bd+'</div>'+
+
+  // ── Win/loss hero banner ──
+  var heroBg, heroEmoji, heroText, heroSub;
+  if(draw){
+    heroBg='linear-gradient(135deg,#d97706,#f59e0b)';
+    heroEmoji='🤝'; heroText='Oavgjort!';
+    heroSub='Ni är jämnstarka — rematchen avgör!';
+  } else if(won){
+    heroBg='linear-gradient(135deg,#16a34a,#22c55e)';
+    heroEmoji='🏆'; heroText='Du vann!';
+    heroSub=getDiffText(myScore,oppScore,true);
+  } else {
+    heroBg='linear-gradient(135deg,#4338ca,#6366f1)';
+    heroEmoji='😅'; heroText='Du förlorade';
+    heroSub=getDiffText(oppScore,myScore,false);
+  }
+
+  var resultBanner=document.getElementById('vs-result');
+  resultBanner.innerHTML=
+    '<div style="grid-column:1/-1;border-radius:16px;padding:24px 20px;background:'+heroBg+';color:#fff;text-align:center;margin-bottom:4px;">'+
+      '<div style="font-size:3rem;margin-bottom:6px;">'+heroEmoji+'</div>'+
+      '<div style="font-size:1.6rem;font-weight:900;letter-spacing:-.02em;">'+heroText+'</div>'+
+      '<div style="font-size:.85rem;opacity:.85;font-weight:600;margin-top:4px;">'+heroSub+'</div>'+
+    '</div>'+
+    '<div class="vs-player '+(won||draw?'vs-winner':'')+'">'+
+      '<div class="vs-avatar" style="background:linear-gradient(135deg,var(--pill),#a78bfa);">😎</div>'+
+      '<div class="vs-name">'+myName+'</div>'+
+      '<div class="vs-pts">'+myScore+'p</div>'+
+      (won?'<span class="win-badge">Vinst 🏆</span>':draw?'<span class="draw-badge">Oavgjort</span>':'<span class="lose-badge">Förlust</span>')+
+    '</div>'+
     '<div class="vs-sep">VS</div>'+
-    '<div class="vs-player '+((!won&&!draw)?'vs-winner':'')+'"><div class="vs-avatar" style="background:linear-gradient(135deg,#0ea5e9,#38bdf8);">🎮</div><div class="vs-name">'+oppName+'</div><div class="vs-pts">'+oppScore+'p</div>'+ob+'</div>';
-  document.getElementById('compare-grids').innerHTML=
-    '<div class="compare-section"><div class="compare-title">Din bräda</div>'+miniGrid(players[mp.myKey])+'</div>'+
-    (oppKey?'<div class="compare-section"><div class="compare-title">'+oppName+'s bräda</div>'+miniGrid(players[oppKey])+'</div>':'');
+    '<div class="vs-player '+((!won&&!draw)?'vs-winner':'')+'">'+
+      '<div class="vs-avatar" style="background:linear-gradient(135deg,#0ea5e9,#38bdf8);">🎮</div>'+
+      '<div class="vs-name">'+oppName+'</div>'+
+      '<div class="vs-pts">'+oppScore+'p</div>'+
+      ((!won&&!draw)?'<span class="win-badge">Vinst 🏆</span>':draw?'<span class="draw-badge">Oavgjort</span>':'<span class="lose-badge">Förlust</span>')+
+    '</div>';
+
+  // ── Compare grids with full row/col labels ──
+  var boards=document.getElementById('result-boards');
+  boards.innerHTML=
+    fullResultGrid(players[mp.myKey],'Din bräda',won?'var(--green)':draw?'var(--amber)':'var(--rose)')+
+    (oppKey?fullResultGrid(players[oppKey],oppName+'s bräda',(!won&&!draw)?'var(--green)':draw?'var(--amber)':'var(--rose)'):'');
+
   nav('screen-mp-result');
+
+  // Confetti if won!
+  if(won) launchConfetti();
+
   setTimeout(function(){if(mp.code)fbDel('games/'+mp.code);},10000);
   mp.code=null;mp.role=null;mp.myKey=null;mp.myState=null;
 }
 
-function miniGrid(data){
-  if(!data||!data.grid)return'<div style="color:var(--muted);font-size:.75rem;text-align:center;">—</div>';
-  var cm={};(data.linesBest||[]).forEach(function(b,idx){if(!b)return;var d=idx<5?'rad':'kol';(b.cells||[]).forEach(function(c){var k=c.r+'-'+c.c;if(!cm[k])cm[k]=new Set();cm[k].add(d);});});
-  var h='<div class="mini-grid">';
-  for(var r=0;r<5;r++)for(var c=0;c<5;c++){var d=cm[r+'-'+c];var cls='mini-cell';if(d){var row=d.has('rad'),col=d.has('kol');if(row&&col)cls+=' hi-both';else if(row)cls+=' hi-row';else if(col)cls+=' hi-col';}h+='<div class="'+cls+'">'+(data.grid[r]&&data.grid[r][c]||'')+'</div>';}
-  return h+'</div>';
+function getDiffText(winnerScore,loserScore,iAm){
+  var diff=winnerScore-loserScore;
+  if(iAm) return 'Du vann med '+diff+' poäng — grattis!';
+  return 'Du förlorade med '+diff+' poäng — bättre lycka nästa gång!';
 }
 
-function leaveMultiplayer(){
+/* ── Confetti ── */
+function launchConfetti(){
+  var colors=['#6366f1','#22c55e','#f59e0b','#e11d48','#0ea5e9','#a78bfa','#fcd34d'];
+  var container=document.getElementById('screen-mp-result');
+  for(var i=0;i<80;i++){
+    (function(i){
+      setTimeout(function(){
+        var el=document.createElement('div');
+        el.style.cssText='position:fixed;pointer-events:none;z-index:999;'+
+          'left:'+Math.random()*100+'vw;top:-10px;'+
+          'width:'+(6+Math.random()*8)+'px;height:'+(6+Math.random()*8)+'px;'+
+          'background:'+colors[Math.floor(Math.random()*colors.length)]+';'+
+          'border-radius:'+(Math.random()>0.5?'50%':'2px')+';'+
+          'animation:confettiFall '+(1.5+Math.random()*2)+'s ease-in forwards;';
+        document.body.appendChild(el);
+        setTimeout(function(){el.remove();},4000);
+      },i*30);
+    })(i);
+  }
+  // Add keyframe if not present
+  if(!document.getElementById('confetti-style')){
+    var s=document.createElement('style');
+    s.id='confetti-style';
+    s.textContent='@keyframes confettiFall{0%{transform:translateY(0) rotate(0deg);opacity:1;}100%{transform:translateY(105vh) rotate('+(Math.random()>0.5?'':'- ')+'720deg);opacity:0;}}';
+    document.head.appendChild(s);
+  }
+}
+
+function miniGrid(data){
+  if(!data||!data.grid)return'<div style="color:var(--muted);font-size:.75rem;text-align:center;">—</div>';
+  var lb=data.linesBest||[];
+  var ls=data.lineScores||new Array(10).fill(0);
+  var cm={};
+  lb.forEach(function(b,idx){if(!b)return;var d=idx<5?'rad':'kol';(b.cells||[]).forEach(function(c){var k=c.r+'-'+c.c;if(!cm[k])cm[k]=new Set();cm[k].add(d);});});
+
+  // Col score headers
+  var h='<div style="display:grid;grid-template-columns:18px repeat(5,1fr) 4px;gap:2px;margin-bottom:2px;">'+
+    '<div></div>';
+  for(var c=0;c<5;c++){
+    var colBest=lb[5+c];
+    h+='<div style="text-align:center;font-size:.55rem;font-weight:800;color:'+(colBest?'var(--blue)':'var(--muted)')+';line-height:1.2;">'+
+      (colBest?'<div>'+colBest.word.toUpperCase()+'</div><div>'+ls[5+c]+'p</div>':'—')+
+    '</div>';
+  }
+  h+='<div></div></div>';
+
+  // Rows with left label (row score) and right label
+  h+='<div style="display:flex;flex-direction:column;gap:2px;">';
+  for(var r=0;r<5;r++){
+    var rowBest=lb[r];
+    h+='<div style="display:grid;grid-template-columns:18px repeat(5,1fr) auto;gap:2px;align-items:center;">';
+    // Row score on left
+    h+='<div style="text-align:right;font-size:.55rem;font-weight:800;padding-right:2px;color:'+(rowBest?'var(--green)':'var(--muted)')+'">'+(rowBest?ls[r]+'p':'—')+'</div>';
+    for(var c2=0;c2<5;c2++){
+      var d=cm[r+'-'+c2];var cls='mini-cell';
+      if(d){var row=d.has('rad'),col=d.has('kol');if(row&&col)cls+=' hi-both';else if(row)cls+=' hi-row';else if(col)cls+=' hi-col';}
+      h+='<div class="'+cls+'">'+(data.grid[r]&&data.grid[r][c2]||'')+'</div>';
+    }
+    // Row word on right
+    h+='<div style="font-size:.5rem;font-weight:800;padding-left:2px;color:'+(rowBest?'var(--green)':'var(--muted)')+';white-space:nowrap;">'+(rowBest?rowBest.word.toUpperCase():'')+'</div>';
+    h+='</div>';
+  }
+  h+='</div>';
+  return h;
+}
+
+/* Full-width result grid with large row/col labels */
+function fullResultGrid(data, title, accentColor){
+  if(!data||!data.grid) return '';
+  var lb=data.linesBest||[];
+  var ls=data.lineScores||new Array(10).fill(0);
+  var totalScore=data.score||0;
+  var cm={};
+  lb.forEach(function(b,idx){
+    if(!b)return;var d=idx<5?'rad':'kol';
+    (b.cells||[]).forEach(function(c){var k=c.r+'-'+c.c;if(!cm[k])cm[k]=new Set();cm[k].add(d);});
+  });
+
+  var cellSize='clamp(44px,11vw,56px)';
+  var h='<div style="margin-bottom:18px;">';
+
+  // Title + total score
+  h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'+
+    '<div style="font-size:.72rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;">'+title+'</div>'+
+    '<div style="font-size:1.2rem;font-weight:900;color:'+accentColor+';">'+totalScore+'p</div>'+
+  '</div>';
+
+  // Col labels row
+  h+='<div style="display:grid;grid-template-columns:52px repeat(5,'+cellSize+');gap:5px;margin-bottom:3px;">';
+  h+='<div></div>';
+  for(var c=0;c<5;c++){
+    var cb=lb[5+c];
+    h+='<div style="display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:40px;padding-bottom:3px;">'+
+      (cb?
+        '<span style="font-size:.6rem;font-weight:700;color:var(--blue);opacity:.9;">'+cb.word.toUpperCase()+'</span>'+
+        '<span style="font-size:.72rem;font-weight:900;color:var(--blue);">'+ls[5+c]+'p</span>'
+        :'<span style="font-size:.7rem;color:var(--muted);">—</span>')+
+    '</div>';
+  }
+  h+='</div>';
+
+  // Grid rows with row labels
+  h+='<div style="display:flex;flex-direction:column;gap:5px;">';
+  for(var r=0;r<5;r++){
+    var rb=lb[r];
+    h+='<div style="display:flex;gap:5px;align-items:center;">';
+    // Row label left
+    h+='<div style="width:52px;height:'+cellSize+';display:flex;flex-direction:column;align-items:flex-end;justify-content:center;padding-right:5px;gap:1px;">'+
+      (rb?
+        '<span style="font-size:.72rem;font-weight:900;color:var(--green);">'+ls[r]+'p</span>'+
+        '<span style="font-size:.6rem;font-weight:700;color:var(--green);opacity:.9;">'+rb.word.toUpperCase()+'</span>'
+        :'<span style="font-size:.7rem;color:var(--muted);">—</span>')+
+    '</div>';
+    // Cells
+    for(var c2=0;c2<5;c2++){
+      var dirs=cm[r+'-'+c2];
+      var extra='';
+      if(dirs){
+        var isRow=dirs.has('rad'),isCol=dirs.has('kol');
+        if(isRow&&isCol) extra=' hi-both';
+        else if(isRow) extra=' hi-row';
+        else if(isCol) extra=' hi-col';
+      }
+      h+='<div class="result-cell'+extra+'" style="width:'+cellSize+';height:'+cellSize+';">'+
+        (data.grid[r]&&data.grid[r][c2]||'')+
+      '</div>';
+    }
+    h+='</div>';
+  }
+  h+='</div></div>';
+  return h;
+}
   if(confirm('Lämna pågående match?')){
     if(mp.unsub){mp.unsub();mp.unsub=null;}
     document.getElementById('lp-overlay').style.display='none';
@@ -1037,27 +1213,55 @@ function leaveMultiplayer(){
 /* ── Boot ── */
 window.addEventListener('DOMContentLoaded',function(){
   var bar=document.getElementById('loading-bar'),msg=document.getElementById('loading-msg');
-  bar.style.width='30%';
-  WORDS.forEach(function(w){WS.add(w.toLowerCase().trim());});
-  bar.style.width='75%';msg.textContent='Testar Firebase…';
-  fbGet('.info/connected').then(function(){
-    bar.style.width='100%';msg.textContent=WS.size+' ord · Firebase ✓';
-    setTimeout(function(){
-      var l=document.getElementById('loading');l.classList.add('out');setTimeout(function(){l.remove();},450);
-      refreshHomeStats();nav('screen-home');
-    },400);
-  }).catch(function(err){
-    bar.style.width='100%';msg.textContent='⚠️ '+err.message;
-    setTimeout(function(){
-      var l=document.getElementById('loading');l.classList.add('out');setTimeout(function(){l.remove();},450);
-      refreshHomeStats();nav('screen-home');
-    },2000);
-  });
   var btn=document.querySelector('.btn-play-again');
   if(btn)btn.addEventListener('click',startSolo);
+
+  function launch(){
+    var l=document.getElementById('loading');
+    l.classList.add('out');
+    setTimeout(function(){l.remove();},450);
+    refreshHomeStats();
+    nav('screen-home');
+  }
+
+  // Step 1: fetch Swedish word list from GitHub (2-5 letters only)
+  bar.style.width='20%';
+  msg.textContent='Hämtar svensk ordlista…';
+  var WORDLIST_URL='https://raw.githubusercontent.com/martinlindhe/wordlist_swedish/master/swe_wordlist';
+  fetch(WORDLIST_URL)
+    .then(function(r){
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      return r.text();
+    })
+    .then(function(txt){
+      var count=0;
+      txt.split('\n').forEach(function(w){
+        w=w.trim().toLowerCase();
+        if(w.length>=2 && w.length<=5 && /^[a-zåäö]+$/.test(w)){
+          WS.add(w);
+          count++;
+        }
+      });
+      bar.style.width='70%';
+      msg.textContent=count+' ord laddade ✓';
+      return fbGet('.info/connected');
+    })
+    .then(function(){
+      bar.style.width='100%';
+      msg.textContent=WS.size+' svenska ord · Firebase ✓';
+      setTimeout(launch,400);
+    })
+    .catch(function(err){
+      // Fallback: use small built-in list if fetch fails
+      if(WS.size===0){
+        'ab ad af al am an ar as at av ax be bi bo by da de di du ed ej ek el em en er es et ex fa fe fi fo fu fy ge go gu ha he hi ho hu hy id il im in is it ja je jo ju ka ke ki ko ku ky la le li lo lu ly ma me mi mo mu my na ne ni no nu ny ok ol om on or os ox pa pe pi po pu ra re ri ro ru ry sa se si so su sy ta te ti to tu ty ul um un ur us ut va ve vi vo vy bok bra dag del den det fil god hav hej hem hit hur hus ion jag jul kan kläd kod kol kom kon man med mor mot och ock ord pro rum sal sen sex sol som som syn tid till tre tro typ val var ven vet via vid vis vit åka åla ägg ält älv öga bada baka balk ball band bank bara bark barn bila bind boll bord bort brev bris brun bryt bräd bröd bull bunt bura burk bygg bäck bäst böja dans data dela disk djup djur dock doft drag drak dram drev driv drog drop duva döda dörr eget ekan ekar elva fest fika fill fint fisk flag flat flin flit flod folk fond form fors fort fota fred frid frys fyra fäll färg glad gled gles grav grev grin grip gris grov grus grän gräs grön guld gump gung gurk gädd gäst göra hack haka hall halm hals halt harm hast hatt hela helg herd heta hets hint hiss hjul hold holm hona horn hota hund hurr husk hyra hytt häng härd häst höja höna höra hörn höst ikon inga inne inre jaga jakt jord jour jude jura jury just järn jäst kalk kall kalv kamp karg karl karm kast kika kilt kind kjol klad klar klas klav klen klis klit klok klot knak knip knut koka kola koll korn kors kort korv kost kram krav krig kris krit krog krok kron kros kugg kula kull kund kung kupa kura kurs kust kyla kärt köld lagg laka lamb lamp lant lass last leda leka lena lita liva livs ljud ljug ljus lock logo loja lopp lurk lust lyda lyft lysa lymf lång låst lägg läng länk lärd läsa läsk läst lönn löpa lösa make makt mala malm malt mama mana mark mars mask mass mast mata matt mena mera mess mild milk miss mitt mjol moda mode moln mora mord mors moss mota mugg musk muta myst måla mäta möts nack nagg nark narr natt neka nick njur njut nock noga norm norr nymf nyss nytt nåla näbb näsa näst nätt odla palm pann pant papp park part pest pila pill pink pinn pisk pist plan plog plus pock pojk polk pond popp pork porr port post pott prim pris prob prop prot prov pugg pump pund pung punk puss radd rage ragg rake ramp rand rank rapp rask rast rave regn rena resa rest reta reva revy rida riff rika rike rima rimm risk riva rock ross rost rusk rust ryck rygg rymt rynk ryta råka räck rädd rätt röda röja röka röst saga sakt salt sand sank sann sign silk sill sina sink sinn sist sova spak span spar spec sped spel spin spis stad stam stan star stat stav sten steg stil stod stok stom ston stor sudd sund surr svag sval svar sven svik svin sylt syra såga såll säck sälj sänk sätt söka tala tall tand tank tant tarm task tass teck tenn term tern test tick timm tink tiss tona tork torn torr torv trad tram tran trap trav tron tros trum tråd träd tugg tung tunn tyck tyng tysk tyst tåla täck tält tänd tänk tätt töja tömm unge uppe urna vala vale valk vall vals valt vana varg varm vass veta vete viga vika vikt vild vill vina ving vink vinn visa viss vita vite vits vrak vred vrid äkta älga älska änka äppl ärva äska ätta ödla ögon ökat ömma öra öron'.split(' ').forEach(function(w){WS.add(w);});
+      }
+      bar.style.width='100%';
+      msg.textContent=WS.size+' ord (reserv) · startar…';
+      setTimeout(launch,1200);
+    });
 });
 
-var WORDS=["ab","ad","af","ag","ak","al","am","an","ar","as","at","av","ax","be","bi","bo","by","bå","bä","bö","da","de","di","do","du","dy","då","dö","ed","ej","ek","el","em","en","er","es","et","ex","fa","fe","fi","fo","fu","fy","få","fä","fö","ge","go","gu","gy","gå","gö","ha","he","hi","ho","hu","hy","hå","hä","hö","id","ig","il","im","in","ip","ir","is","it","iv","ja","je","jo","ju","ka","ke","ki","ko","ku","ky","kå","kä","kö","la","le","li","lo","lu","ly","lå","lä","lö","ma","me","mi","mo","mu","my","må","mä","mö","na","ne","ni","no","nu","ny","nå","nä","nö","od","of","og","oh","oj","ok","ol","om","on","op","or","os","ot","ov","ox","pa","pe","pi","po","pu","py","på","pä","pö","ra","re","ri","ro","ru","ry","rå","rä","rö","sa","se","si","so","su","sy","så","sä","sö","ta","te","ti","to","tu","ty","tå","tä","tö","ub","ud","uf","ug","ul","um","un","up","ur","us","ut","uv","va","ve","vi","vo","vy","vå","vä","vö","åk","ål","ån","år","ås","åt","äg","äl","äm","än","är","äs","ät","öd","ög","öl","ön","ör","ös","öt","abb","ack","aga","age","akt","alg","all","alm","alt","alv","amb","amp","and","ane","ans","ant","apa","app","arg","ark","arm","ars","art","ask","att","bad","bag","bak","bal","ban","bar","bas","bat","bax","bed","bel","ben","ber","bet","bev","bid","big","bil","bin","bio","bit","bla","ble","bli","blo","blå","bod","boj","bok","bol","bom","bon","bor","bos","bot","box","bra","bre","bri","bro","bru","bry","brå","bud","bur","bus","byn","bål","bår","bög","bön","böj","bör","dag","dal","dam","dan","dar","dat","del","den","det","dik","din","dip","dis","dit","dju","don","dra","dre","dri","dro","dub","dug","duk","dun","duo","dur","dyn","dår","där","död","eka","eko","eld","elg","ell","elm","elv","emu","eng","ens","era","ers","eta","fam","far","fas","fat","fax","fel","fem","fes","fet","fil","fin","fis","fit","fix","flo","fly","flå","fog","fon","for","fos","fot","fri","fro","fru","fry","frå","ful","fun","fur","fus","fyn","fyr","får","fäl","fär","för","gal","gam","gap","gas","gat","gav","gel","gem","gen","ger","ges","get","gin","gla","gle","gli","glo","god","gon","gor","gos","got","gra","gre","gri","gro","gru","gry","grå","gul","gum","gun","gus","gyl","gym","gål","går","gäl","gär","gör","haj","hal","han","har","has","hat","hav","hej","hel","hem","het","his","hit","hop","hor","hos","hot","hud","hug","hum","hun","hur","hut","huv","hya","hyl","hyr","hys","hyt","hål","hår","häl","häm","hän","här","häx","hög","höj","hön","hör","ion","jag","jak","jav","jet","job","jod","jok","jon","jor","jul","jun","jur","jus","kaj","kak","kal","kam","kan","kap","kar","kas","kat","kav","kep","kil","kin","kit","kli","klo","klå","kod","koj","kok","kol","kom","kon","kop","kor","kos","kot","kry","kub","kul","kum","kun","kup","kur","kut","kyl","kål","kår","käl","kär","kön","köp","kör","lag","lak","lap","lar","las","lat","lax","lek","let","lev","lid","lig","lim","lin","lis","lit","liv","lod","log","lok","lon","lop","lor","los","lot","lug","luk","lum","lun","lur","lus","lut","lya","lyd","lyf","lys","låg","lån","lår","lås","läg","län","lär","läs","lög","lön","lös","mag","mak","mal","man","mar","mas","mat","max","med","meg","mej","mel","men","mer","mes","met","mig","mil","min","mir","mis","mit","mix","mod","mol","mon","mop","mor","mos","mot","mud","mug","mul","mun","mur","mus","myr","mål","mån","mår","mås","mäl","män","mär","mät","möt","nab","nag","nak","nap","nar","nas","nat","nav","nej","nek","net","nip","nit","nob","nod","nog","nom","nor","not","nug","nul","nun","nur","nut","nya","nyd","nyk","nyp","nys","nyt","nål","når","nås","näb","när","näs","nät","nöd","nöj","nöt","oas","obs","ont","ord","orm","ors","ort","oxe","pad","paj","pal","pan","pap","par","pas","pat","pax","pek","pet","pil","pin","pip","pis","pit","pix","poj","pol","pom","pop","por","pot","pox","pra","pro","pub","puk","pul","pum","pur","pus","put","pys","pål","pås","päl","pöl","rad","rak","ram","rap","rar","ras","rat","rav","rea","red","rej","rek","rem","ren","rep","res","ret","rev","rid","rim","rin","rip","ris","rit","riv","rod","rok","rom","ron","rop","ros","rot","rov","rug","rul","rum","run","rus","rut","rya","ryg","ryk","rym","ryp","rys","ryt","råd","råg","råk","rån","rås","råt","räk","rän","räs","rät","räv","rök","rön","rör","rös","sac","saf","sak","sal","sam","sar","sas","sat","sax","sej","sek","sel","sem","sen","ser","set","sex","sid","sig","sim","sin","sir","sis","sit","six","ska","sko","sku","sky","skå","sma","smo","smu","smy","små","sno","sob","sol","som","sop","sor","sos","sot","sov","spa","spy","spå","sta","ste","sti","sto","stu","sty","stå","sub","sug","sul","sum","sun","sur","sut","syd","syn","syr","sys","såg","sål","sås","säd","säk","säl","sän","sät","sök","söl","sön","söt","tab","tak","tal","tam","tan","tap","tar","tas","tat","tav","tax","tek","tel","tem","ten","ter","tes","tid","tig","tim","tin","tip","tis","tit","tjo","tju","tog","tok","ton","top","tor","tos","tot","tra","tre","tri","tro","tru","try","trå","tub","tug","tul","tun","tur","tus","tut","tuv","typ","tyr","tys","tåg","tål","tår","tås","tät","töj","töm","tön","ugg","ugn","ull","ulv","ung","uns","upp","urk","urn","vad","vag","vak","val","van","var","vas","vat","vax","ved","vel","ven","ver","vet","via","vid","vil","vim","vin","vip","vis","vit","viv","yxa","åka","åla","ånga","åra","åsa","åsk","åta","äga","ägg","ägo","äkt","älg","älv","änd","äng","änk","äpp","äre","ärt","äsk","äta","ätt","öde","ödl","öga","öka","öla","önd","öng","önk","öns","öra","öre","örn","öst","öva","bada","bajs","baka","balk","ball","band","bank","bara","bark","barn","basa","bask","bast","bete","biff","bind","biol","bira","bisk","bisp","biss","bita","blad","blek","blic","blik","blin","blit","blod","blom","blot","bluf","blus","blåa","blyg","blys","blöd","blöt","bock","boja","bola","bold","boll","bolt","bond","bone","bord","bore","born","bort","bota","bott","brak","brev","brig","bris","brod","bron","brun","brus","bryd","bryg","bryt","bräd","bräk","bröd","bubb","bugg","buka","bull","bult","bunt","bura","burk","burr","buse","bygg","bygd","byka","bytt","bård","bäck","bädd","bäst","böja","böjd","bölj","böna","börd","dala","dams","dans","darr","dask","data","dela","dill","dina","ding","dino","diod","disk","diss","ditt","djup","djur","dock","doft","dold","dolk","dome","dopp","dosa","dott","drag","drak","dram","drev","driv","drog","drop","drum","drög","dröj","dröm","dröp","dubb","dugg","dumb","dump","dunk","duva","dyka","dykt","dämt","döda","dörr","döva","ebbe","eget","egna","ekan","ekar","ekat","ekip","ekon","elva","enig","enot","ense","epok","epos","eras","evig","exil","expo","fack","falk","fall","falm","fana","fann","fans","fant","fara","fare","farm","fart","fasa","fast","fatt","fejd","fejk","fela","fend","fena","ferd","fesk","fest","fett","fika","fike","fila","fill","filt","fina","fink","finn","fint","fisk","fist","fjol","fjun","flag","flak","flat","flic","flik","flin","flip","flis","flit","flod","flok","flom","flop","flor","flot","flug","flyd","flyg","flyt","fläk","fläm","flöd","flöj","flöt","folk","fond","form","fors","fort","foss","fota","frak","fred","fren","frid","frih","frim","fris","frit","frod","fron","fros","frug","frum","frun","frus","fryg","frys","fråg","fräk","främ","fräs","fröj","frön","fukt","fult","fund","furr","fusk","fyra","fyll","fäll","färd","färg","färj","fäst","föda","förr","förs","fösa","gadd","gala","gall","galt","gang","gard","garn","garv","gasa","gate","gave","gavl","gena","gens","gest","gick","gips","glad","gled","gles","glet","glid","glim","glob","glor","glot","glöd","glöm","gnag","gott","gram","grap","grav","grep","grev","gril","grim","grin","grip","gris","grov","grub","grus","gryl","grym","gryn","grys","gryt","grän","gräs","gräv","gröd","grön","grös","gubb","guld","gult","gump","gung","gurk","gäck","gädd","gärn","gäss","gäst","göra","hack","haka","hake","hala","halk","hall","halm","hals","halt","hamm","hane","hans","hara","harm","harv","hasa","hash","hask","hasp","hass","hast","hatt","have","havs","hela","helg","hell","helm","help","hems","herd","heta","hets","hett","himl","hinn","hint","hiss","hjul","hold","holk","holm","hona","hora","hord","horn","hors","hort","host","hota","hots","hulk","hull","humm","hump","hund","hung","hunk","hunt","hura","hurr","husa","husk","hutt","hyfs","hyll","hyra","hyrs","hyst","hytt","häls","hämt","häng","hänt","härd","härl","härm","härs","häst","höft","högg","högs","höja","höjd","höna","höra","hörn","hörs","hört","höst","ikon","inga","inka","inna","inne","inre","jaga","jake","jakt","java","jazz","jord","jour","jude","jula","jump","jung","jura","jury","just","jämt","järn","jäsa","jäst","kack","kale","kalk","kall","kalv","kamp","kapa","kare","karg","karl","karm","karv","kasa","kase","kash","kask","kass","kast","kate","kava","kika","kilt","kind","kink","kinn","kipa","kjol","klad","klam","klap","klar","klas","klat","klav","klen","klin","klis","klit","kliv","klok","klor","klot","klur","klut","klyk","klåd","kläd","kläm","klär","klöv","knak","knap","knar","knas","knik","knil","knip","knis","knob","knod","knog","knol","knop","knor","knot","knug","knul","knut","knyp","knål","knäp","knät","knöl","koja","koka","kola","koll","korn","kors","kort","korv","koss","kost","krab","kram","krav","kred","krig","krim","kris","krit","krog","krok","krom","kron","kros","krug","krul","krum","krun","krut","kryl","krym","kryn","kryp","krys","kräk","kräm","kröp","kudd","kugg","kula","kull","kult","kund","kung","kupa","kupe","kura","kurs","kust","kyla","kyll","kylt","kyrk","käft","käll","käng","kärl","kärt","köld","köpt","körn","körs","kört","körv","labb","ladd","lage","lagg","laka","lama","lamb","lamp","lank","lant","lask","lass","last","leda","lede","ledk","ledn","leka","leke","lena","lerk","lerm","lerv","leta","levy","lexa","lexi","lida","lidd","lidg","lidk","lidm","lidn","lidr","lids","likt","lila","lill","lima","lime","limm","limp","lina","lind","linj","link","linn","lins","lipa","lirk","lisp","liss","list","lita","lite","liva","live","livs","livt","ljud","ljug","ljum","ljus","ljut","lock","loge","logg","logo","loja","lopp","lord","lurk","lurs","lurt","lust","lutt","lyda","lyft","lykt","lymf","lysa","lyse","lysk","lyss","lyst","lytt","lång","låst","låta","lägg","lägst","läkt","lämp","läng","länk","läns","lärd","läsa","läse","läsk","läsp","läst","läxa","löda","löke","lönn","löpa","löps","lösa","löse","lösk","löst","mack","majs","make","makt","mala","malm","malt","mama","mana","mane","mang","mark","marl","mars","mart","mask","mass","mast","mata","mate","matt","mega","melo","mena","merd","mera","mesa","mesh","mess","mest","meta","mild","milk","mill","minn","miss","mitt","mjöl","moda","mode","mole","moln","mora","mord","mors","mort","mosa","moss","most","mota","mugg","mumm","mums","murm","murt","musk","muta","mutt","myrk","myst","målm","måls","målt","månl","måns","märkt","mäst","mäta","mäts","mätt","möts","mött","nack","nagg","nake","namo","nark","narl","narm","narr","nart","nast","natt","neka","nick","niga","nirk","nirm","nirn","nirr","nisk","nitr","nitt","njur","njut","nobs","nock","noda","noga","norm","norn","norr","nors","nort","nosk","null","nymf","nyss","nyst","nytt","nåla","näbb","nämnd","näsa","näsk","näst","nätt","nöjd","odla","padd","palm","pann","pans","pant","papp","park","pars","part","past","patt","peka","pena","pend","peng","penn","pest","pila","pilk","pill","piln","pils","pilt","pina","pine","pink","pinn","pirk","pirl","pirn","pirr","pisk","piss","pist","plak","plan","plas","plat","plik","plim","plin","plis","plit","plod","plog","plok","plom","plop","plot","plov","plug","plum","plus","plut","plym","plåg","plåt","pläg","plöj","pock","pojk","polk","pols","polt","polv","pomp","pond","pong","popp","pork","porn","porr","pors","port","porv","post","pott","prik","prim","pris","prob","prop","prot","prov","pryd","pryl","pryt","prål","prän","pröv","publ","pugg","pulk","puls","pult","pulv","pump","pund","pung","punk","punt","purk","purr","pusk","puss","pust","pytt","påla","påle","påsk","påst","pärm","pärn","pärr","pärt","radd","rage","ragg","rake","rakt","rall","ramp","rand","rank","rann","raps","rark","rarl","rarr","rars","rart","rask","rasp","rast","rave","reck","regn","rela","rele","relg","relk","relm","reln","rels","relt","rely","rena","rend","reng","renk","renn","resa","rese","resk","resm","ress","rest","reta","rete","retm","retn","rets","rett","reva","reve","revg","revk","revm","revn","revr","revs","revt","revy","rida","ridb","ridd","ridg","ridk","ridm","ridn","ridr","rids","ridt","riff","rika","rike","rikt","rile","rilk","rilm","riln","rilr","rils","rilt","rima","rimm","risk","rism","risn","risp","rist","rivb","rivc","rivd","rivg","rivk","rivm","rivn","rivp","rivr","rivs","rivt","robb","rock","roff","rokk","rokm","rolm","rona","ropp","rorm","rorr","ross","rost","rots","rova","rovg","rovk","rovm","rovn","rovr","rovs","rudd","rugg","rulk","rulm","runn","rusc","rusk","russ","rust","rutt","ryck","rygg","rykt","rymm","rymn","ryms","rymt","rynk","rypa","rypt","rysk","ryss","ryta","ryts","rytt","rådd","råka","råna","räck","rädd","räkn","rämna","ränn","rätt","röda","röja","röjd","röka","rönj","rörm","rörn","rörr","rörs","rört","röst","röta","röts","rött","sack","saga","saka","sakt","sala","salg","salk","sall","salm","salt","salv","sams","sand","sang","sank","sann","sans","sarl","sarm","sarn","sarr","sars","sart","sarv","sask","sass","satt","sela","sele","self","selg","selk","selm","seln","sels","selt","seml","senl","senm","senn","senr","serg","serk","serm","sern","serr","sers","serv","sidg","sidk","sidm","sidn","sidr","sids","sidt","siga","sigk","sigl","sign","sigr","sila","silk","sill","silm","siln","silv","simb","simm","simn","sina","sine","sink","sinn","sirk","sirl","sirn","sirr","sirt","sisk","sisp","siss","sist","siva","sivk","sivm","sjud","sjuk","sjun","sjut","sjön","skabb","skada","skadd","skak","skal","skall","skalp","skam","skan","skap","skar","skat","skav","sken","sker","sket","skid","skil","skim","skip","skis","skiv","skog","skon","skor","skot","skov","skrak","skred","skriv","skrot","skrub","skrut","skrå","skrän","skull","skulp","skur","skuta","skylt","skåd","skåla","skård","skärm","skärn","skärr","skärs","skärt","slabb","slad","slak","slam","slant","slap","slar","slas","slat","slav","slem","slid","slim","slip","slit","sliv","slod","slog","slok","slon","slop","slot","slov","slug","slut","slåss","släck","släpp","slösa","slött","smak","smal","smet","smid","smit","smog","smuts","smält","snack","snapp","snara","snick","snill","snobb","snora","snorr","snubb","snusk","snäll","sodd","soffa","solo","somm","sona","sort","sorv","sova","spak","span","spar","spat","spec","sped","spel","spin","spis","spjut","spola","sprak","spröd","spår","spänn","spärr","spöka","stad","stam","stan","star","stat","stav","stem","step","sten","steg","stil","stim","stod","stoj","stok","stom","ston","stor","stud","stuk","stum","stun","styk","styr","stål","stän","stäng","stärk","stöt","stöv","sudd","summ","sund","sunt","surr","svag","svaj","sval","svam","svans","svar","sven","svet","svid","svik","svim","svin","svit","sylt","syng","syns","synt","syra","syss","såga","sågs","sågt","såll","säck","sägs","sälj","säljs","sält","sända","sänk","sätt","söka","sömn","söts","tack","tags","tala","talg","tall","talm","taln","talp","talr","tals","talt","talv","tama","tand","tank","tann","tant","tark","tarl","tarm","tarn","tarv","task","tass","tatt","teck","tela","tenn","term","tern","test","tick","tiga","timm","tink","tins","tirk","tirs","tiss","tist","titt","tjat","tjog","tjur","tjut","tock","toga","tolv","tona","tork","torn","torr","tors","torv","toss","trad","trak","tram","tran","trap","trar","tras","trat","trav","tred","tref","tren","tret","trev","trib","trig","trim","trin","trip","tris","trit","triv","trob","trod","trog","trol","tron","tror","tros","trot","trov","trug","trum","trus","trut","tryc","tryd","tryg","tryl","tryn","tryp","trys","tryt","tråd","tråk","träd","träff","träng","träsk","trött","tuba","tubb","tugg","tuja","tule","tung","tunk","tunn","tunt","turk","turn","turr","turs","tusk","tuss","tust","tutt","tyck","tyng","tysk","tyst","tåga","tåla","tålm","tåln","tålr","tåls","tålt","täck","tälja","tälj","tält","tände","tänd","täng","tänk","tänt","tätt","töja","töjd","töjn","töjr","töjt","tömma","töms","tömt","uggl","ugns","ulna","ulva","unge","uppe","uppf","uppg","upph","uppk","uppl","uppm","uppn","uppr","upps","uppt","uppv","urna","vala","vale","valk","vall","valm","valn","valp","valr","vals","valt","valv","vana","vane","vang","vann","vant","vara","vard","vare","varg","vark","varl","varm","varn","vars","vart","varv","vase","vask","vass","vata","vate","vaxa","vedh","vedk","vedm","vedn","vedr","veds","vedt","vedv","veka","veke","vekl","venk","venm","venn","vera","verd","verk","verl","verm","vern","verr","vers","vert","verv","veta","vete","vibb","vidd","vidf","vidg","vidk","vidl","vidm","vidn","vidp","vidr","vids","vidt","vidv","viga","vigk","vigl","vign","vigr","vika","vike","vikk","vikm","vikr","viks","vikt","vild","vilg","vill","vilm","viln","vilp","vilr","vils","vilt","vilv","vimk","viml","vimm","vina","vine","ving","vink","vinn","vins","vint","vira","vire","virk","virl","virm","virn","virr","virs","virt","virv","visa","vise","visk","visn","visp","visr","viss","vist","vita","vite","vitk","vitl","vitm","vitn","vitp","vitr","vits","vitt","vrak","vred","vrid","yoga","yogi","ytan","åkad","åken","åker","åket","ålag","ålat","ålen","åler","ålet","ånga","årab","årad","åren","åres","året","åror","åtag","åtar","åtas","åtat","åter","äckt","äkta","äkte","älga","älgm","älgn","älgr","älgs","älgt","älgv","älska","änge","ängk","ängl","ängm","ängn","ängr","ängs","ängt","änka","änke","äppl","ärft","ärtk","ärtm","ärtn","ärtr","ärts","ärtt","ärva","ärve","äska","äske","ätit","ätta","ättk","ättl","ättm","ättn","ättr","ätts","ättt","ävek","ävem","även","äver","äves","ävet","ödla","ögon","ökat","ökas","ölsk","ömma","ömme","örna","örne","örns","örtt","örtv","östk","östm","östn","östr","östs","östt","östv","övad","övan","övar","övas","övat","öven","över","öves","övet","övig","övre","övar","övas","ögna","örat","ören","örna","öron","afton","alarm","aldrig","allas","allra","alster","altan","anbud","andra","anfall","anlag","anmäl","annan","antag","använda","appar","armod","artig","arton","avkok","avlat","avlys","avlöp","avrad","avtal","avund","avväg","backe","bagge","bakom","balja","banka","banna","barra","batta","berga","beskt","beska","betus","bibel","bitsk","bjälk","bjuda","bjärt","bläck","blöja","bocka","bojor","bolma","bomba","bonde","borga","borst","borts","borta","botna","brant","brasa","breda","brosk","brott","brusa","bråte","bränd","bröst","bubba","bulla","bylte","bästa","böcka","bödel","börda","bössa","datum","debut","dekal","delta","depot","derby","diket","dikte","djäkn","djärv","dolke","domna","dorra","draga","drags","drana","drapp","drägg","dräkt","dröna","dugga","dunga","dunka","dunst","dusch","dvärg","dynga","dälig","dämpa","dödad","dödas","dölja","dörra","dövas","eldar","eldig","elfta","engel","erkän","etapp","evigt","extra","fakta","falla","falsk","farsa","farst","fatsa","femte","fenix","fetta","filea","filma","finne","fiska","fjord","fjäde","fjärr","fjäsk","flabb","flata","flena","flick","flimr","flopp","flott","fluga","flykt","följe","flärd","fläsk","flöte","fokus","folke","forna","forsk","frack","franc","frass","frist","fross","frust","fräls","frälst","fröjd","fröna","fulle","galet","gator","genug","gille","gjord","gjuta","gläds","glögg","glöms","godta","gorma","gosse","grabb","grade","grape","grave","greja","grepp","greve","grima","grins","gripa","groda","grogg","groms","gruta","gruve","grymt","gränd","gröna","gröpe","gubbe","gulna","gutar","gutan","gälla","göken","göten","halka","halta","hamna","hanna","harpa","harta","hedra","hemsk","hitta","hobby","hopar","horsa","horse","horta","hotad","hosta","hugga","hyvla","hänge","hänga","hänvi","häpna","härda","härnä","hörna","inbud","indra","inneh","insyn","intag","intet","invid","irisk","kaffe","karta","kassa","klass","klimat","klottra","knyta","kontakt","kosta","kraftig","kräva","lista","logik","lycklig","löpning","maskin","media","metall","miljon","mineral","missa","moderna","myndighet","målning","möjlig","navigera","neutral","noga","notis","nyckel","närvaro","nödvändig","ocean","okej","orka","planera","poäng","positiv","privat","problem","produkt","projekt","protest","reglera","respekt","resultat","röka","samhälle","satsa","sektion","seriös","sikta","skapa","skilja","skriva","snabb","springa","starta","stjärna","strategi","styrka","svara","symbol","system","säkert","söker","talang","teknik","tendens","teori","tillämpa","trogen","tvinga","unika","uppföra","uppskatta","utbilda","utforska","utmana","uttrycka","värdera","välja","världen","växa","ytlig","ytterst","kafé","kaffe","choklad","bulle","bakad","smör","socker","mjölk","äpple","päron","hallon","kakan","tårta","bakare","brödet","bröden","bredvid","bordet","fönster","golvet","taket","väggen","dörren","stolen","soffan","lampan","koppen","glaset","tallrik","gaffeln","kniven","skeden","steken","gryta","soppan","sallad","vitlök","tomaten","gurkan","rödbeta","moroten","fisken","räkorna","ostarna","smörjan","grädden","yoghurt","kefiren","saften","juicen","vattnet","teet","vinet","spriten","likören","latte","cappuccino","espresso","macchiato"];
 </script>
 </body>
 </html>
