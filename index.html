@@ -7,41 +7,23 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
-
-<!-- Firebase Compat SDK (works in all browsers, no ESM needed) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-
 <style>
-:root{
-  --bg:#f0f4ff;--surface:#fff;--ink:#1e1b4b;--sub:#6b7280;--muted:#94a3b8;--border:#e2e8f0;
-  --pill:#6366f1;--pill-d:#4338ca;--pill-bg:#eef2ff;
-  --green:#16a34a;--green-bg:#dcfce7;--green-hi:#86efac;
-  --blue:#2563eb;--blue-bg:#dbeafe;--blue-hi:#93c5fd;
-  --amber:#d97706;--amber-bg:#fef3c7;--amber-hi:#fcd34d;
-  --rose:#e11d48;--rose-bg:#fff1f2;
-  --cell:clamp(50px,13vw,66px);--gap:6px;--r:14px;
-}
+:root{--bg:#f0f4ff;--surface:#fff;--ink:#1e1b4b;--sub:#6b7280;--muted:#94a3b8;--border:#e2e8f0;--pill:#6366f1;--pill-d:#4338ca;--pill-bg:#eef2ff;--green:#16a34a;--green-bg:#dcfce7;--green-hi:#86efac;--blue:#2563eb;--blue-bg:#dbeafe;--blue-hi:#93c5fd;--amber:#d97706;--amber-bg:#fef3c7;--amber-hi:#fcd34d;--rose:#e11d48;--rose-bg:#fff1f2;--cell:clamp(50px,13vw,66px);--gap:6px;--r:14px;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;}
 body{background:var(--bg);font-family:'Nunito',sans-serif;color:var(--ink);min-height:100%;display:flex;flex-direction:column;align-items:center;padding:0 0 40px;-webkit-tap-highlight-color:transparent;}
-
-/* LOADING */
 #loading{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:999;transition:opacity .4s;}
 #loading.out{opacity:0;pointer-events:none;}
 #loading-title{font-size:2.4rem;font-weight:900;color:var(--pill);}
 #loading-bar-track{width:180px;height:6px;background:var(--border);border-radius:99px;overflow:hidden;}
 #loading-bar{height:100%;background:var(--pill);width:0;transition:width .3s;border-radius:99px;}
-#loading-msg{font-size:.75rem;color:var(--muted);text-align:center;padding:0 20px;}
-
-/* SCREENS */
+#loading-msg{font-size:.75rem;color:var(--muted);}
 .screen{width:100%;max-width:480px;min-height:100vh;display:none;flex-direction:column;padding:0 16px 40px;}
 .screen.active{display:flex;}
-
-/* SHARED */
 .nav{width:100%;display:flex;align-items:center;padding:20px 0 16px;gap:12px;}
-.nav-back{width:38px;height:38px;border-radius:10px;background:var(--surface);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.1rem;cursor:pointer;flex-shrink:0;transition:border-color .15s;}
-.nav-back:hover{border-color:var(--pill);}
+.nav-back{width:38px;height:38px;border-radius:10px;background:var(--surface);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.1rem;cursor:pointer;flex-shrink:0;}
 .nav-title{font-size:1.1rem;font-weight:900;flex:1;}
 .nav-logo{font-size:1.6rem;font-weight:900;color:var(--pill);letter-spacing:-.03em;flex:1;}
 .nav-logo span{color:var(--ink);}
@@ -102,8 +84,6 @@ body{background:var(--bg);font-family:'Nunito',sans-serif;color:var(--ink);min-h
 .online-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:4px;}
 .challenge-btn{padding:7px 14px;border-radius:99px;background:var(--pill-bg);color:var(--pill);font-family:inherit;font-size:.72rem;font-weight:800;border:2px solid #c7d2fe;cursor:pointer;white-space:nowrap;}
 .challenge-btn:hover{background:var(--pill);color:#fff;}
-
-/* GRID */
 .game-nav{width:100%;display:flex;align-items:center;padding:16px 0 12px;gap:10px;}
 .topbar{width:100%;display:flex;gap:10px;margin-bottom:14px;}
 .topbar-card{flex:1;background:var(--surface);border-radius:var(--r);border:2px solid var(--border);padding:10px 12px;display:flex;flex-direction:column;align-items:center;gap:2px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
@@ -137,8 +117,6 @@ body{background:var(--bg);font-family:'Nunito',sans-serif;color:var(--ink);min-h
 .cell.hi-row,.result-cell.hi-row{background:var(--green-bg)!important;border-color:var(--green-hi)!important;color:var(--green)!important;border-bottom:4px solid var(--green)!important;box-shadow:0 3px 0 #86efac!important;}
 .cell.hi-col,.result-cell.hi-col{background:var(--blue-bg)!important;border-color:var(--blue-hi)!important;color:var(--blue)!important;border-left:4px solid var(--blue)!important;box-shadow:0 2px 0 #93c5fd!important;}
 .cell.hi-both,.result-cell.hi-both{background:var(--amber-bg)!important;border-color:var(--amber-hi)!important;color:var(--amber)!important;border-bottom:4px solid var(--green)!important;border-left:4px solid var(--blue)!important;box-shadow:0 0 0 3px #fde68a,0 4px 10px rgba(217,119,6,.25)!important;}
-
-/* MULTIPLAYER */
 .code-display{text-align:center;padding:28px 20px;background:linear-gradient(135deg,#6366f1,#818cf8);border-radius:var(--r);color:#fff;margin-bottom:12px;}
 .cd-label{font-size:.7rem;font-weight:800;letter-spacing:.2em;text-transform:uppercase;opacity:.8;margin-bottom:8px;}
 .cd-code{font-size:3.5rem;font-weight:900;letter-spacing:.18em;line-height:1;}
@@ -171,8 +149,6 @@ body{background:var(--bg);font-family:'Nunito',sans-serif;color:var(--ink);min-h
 .lp-btn{width:80px;height:80px;border-radius:16px;background:#fff;border:3px solid transparent;display:flex;align-items:center;justify-content:center;font-size:2.2rem;font-weight:900;color:var(--ink);cursor:pointer;transition:transform .1s,border-color .15s;box-shadow:0 4px 0 rgba(0,0,0,.2);}
 .lp-btn:hover{border-color:var(--pill);transform:translateY(-3px);}
 .lp-btn:active{transform:translateY(1px);}
-
-/* RESULT */
 .result-header{width:100%;text-align:center;padding:16px 0 20px;}
 .result-title{font-size:2rem;font-weight:900;}
 .result-score{font-size:4rem;font-weight:900;color:var(--pill);line-height:1;margin:4px 0;animation:popIn .5s .1s cubic-bezier(.18,.89,.32,1.28) both;}
@@ -208,7 +184,7 @@ body{background:var(--bg);font-family:'Nunito',sans-serif;color:var(--ink);min-h
 <div id="loading">
   <div id="loading-title">Ordfläta</div>
   <div id="loading-bar-track"><div id="loading-bar"></div></div>
-  <div id="loading-msg">Ansluter…</div>
+  <div id="loading-msg">Laddar…</div>
 </div>
 
 <!-- HOME -->
@@ -219,8 +195,8 @@ body{background:var(--bg);font-family:'Nunito',sans-serif;color:var(--ink);min-h
     <div class="home-username" id="home-username">Spelaren</div>
     <div class="home-level" id="home-level">Nivå 1 · Nybörjare</div>
     <div style="margin-top:12px;">
-      <div class="xp-bar-track"><div class="xp-bar-fill" id="home-xp-bar" style="width:30%"></div></div>
-      <div class="xp-labels"><span>0 XP</span><span id="home-xp-label">30/100 XP</span></div>
+      <div class="xp-bar-track"><div class="xp-bar-fill" id="home-xp-bar" style="width:0%"></div></div>
+      <div class="xp-labels"><span>0 XP</span><span id="home-xp-label">0/100 XP</span></div>
     </div>
   </div>
   <div class="section-label">Din statistik</div>
@@ -249,6 +225,35 @@ body{background:var(--bg);font-family:'Nunito',sans-serif;color:var(--ink);min-h
       <div style="display:flex;gap:10px;"><div style="font-size:1.2rem;flex-shrink:0;">3️⃣</div><div style="font-size:.85rem;font-weight:600;color:var(--sub);">1 poäng per bokstav. Max 50p för en perfekt bräda!</div></div>
     </div>
   </div>
+</div>
+
+<!-- SOLO GAME -->
+<div class="screen" id="screen-game">
+  <div class="game-nav">
+    <div class="nav-back" onclick="nav('screen-play')">‹</div>
+    <div class="nav-title">Enspelarläge</div>
+  </div>
+  <div class="topbar">
+    <div class="topbar-card letter-card"><div class="topbar-label">Bokstav</div><div class="letter-big" id="current-letter">?</div></div>
+    <div class="topbar-card"><div class="topbar-label">Poäng</div><div class="topbar-value" id="total-score">0</div></div>
+    <div class="topbar-card"><div class="topbar-label">Kvar</div><div class="topbar-value" id="tiles-left">25</div></div>
+  </div>
+  <div class="grid-outer">
+    <div class="col-labels-row" id="col-labels-row"></div>
+    <div class="grid-rows" id="grid-rows"></div>
+  </div>
+</div>
+
+<!-- SOLO RESULT -->
+<div class="screen" id="screen-result">
+  <div class="result-header">
+    <div class="result-title">🎉 Spelet slut!</div>
+    <div class="result-score" id="result-score">0</div>
+    <div class="result-subtitle" id="result-subtitle">poäng</div>
+  </div>
+  <div class="result-grid-outer" id="result-grid-outer"></div>
+  <button class="btn-play-again" onclick="startSolo()">↺ Spela igen</button>
+  <button class="btn secondary" onclick="nav('screen-home')">⌂ Hem</button>
 </div>
 
 <!-- MP LOBBY -->
@@ -322,8 +327,8 @@ body{background:var(--bg);font-family:'Nunito',sans-serif;color:var(--ink);min-h
     <button class="profile-edit-btn" onclick="editProfile()">✏️ Ändra namn</button>
   </div>
   <div class="card" style="margin-bottom:8px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><span style="font-size:.8rem;font-weight:800;">Erfarenhet</span><span style="font-size:.75rem;color:var(--muted);font-weight:700;" id="profile-xp-label">30/100 XP</span></div>
-    <div class="xp-bar-track"><div class="xp-bar-fill" id="profile-xp-bar" style="width:30%"></div></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><span style="font-size:.8rem;font-weight:800;">Erfarenhet</span><span style="font-size:.75rem;color:var(--muted);font-weight:700;" id="profile-xp-label">0/100 XP</span></div>
+    <div class="xp-bar-track"><div class="xp-bar-fill" id="profile-xp-bar" style="width:0%"></div></div>
   </div>
   <div class="section-label">Achievements</div>
   <div class="achievement-grid">
@@ -367,50 +372,6 @@ body{background:var(--bg);font-family:'Nunito',sans-serif;color:var(--ink);min-h
   <div style="margin-top:8px;"><button class="btn secondary">+ Bjud in vänner</button></div>
 </div>
 
-<!-- SOLO RESULT -->
-<div class="screen" id="screen-result">
-  <div class="result-header">
-    <div class="result-title">🎉 Spelet slut!</div>
-    <div class="result-score" id="result-score">0</div>
-    <div class="result-subtitle" id="result-subtitle">poäng</div>
-  </div>
-  <div class="result-grid-outer" id="result-grid-outer"></div>
-  <button class="btn-play-again" onclick="startSolo()">↺ Spela igen</button>
-  <button class="btn secondary" onclick="nav('screen-home')">⌂ Hem</button>
-</div>
-
-<!-- ═══════════════ SCREEN: GAME (SOLO) ═══════════════ -->
-<div class="screen" id="screen-game">
-  <div class="game-nav">
-    <div class="nav-back" onclick="nav('screen-play')">‹</div>
-    <div class="nav-title">Enspelarläge</div>
-  </div>
-  <div class="topbar">
-    <div class="topbar-card letter-card">
-      <div class="topbar-label">Bokstav</div>
-      <div class="letter-big" id="current-letter">?</div>
-    </div>
-    <div class="topbar-card"><div class="topbar-label">Poäng</div><div class="topbar-value" id="total-score">0</div></div>
-    <div class="topbar-card"><div class="topbar-label">Kvar</div><div class="topbar-value" id="tiles-left">25</div></div>
-  </div>
-  <div class="grid-outer">
-    <div class="col-labels-row" id="col-labels-row"></div>
-    <div class="grid-rows" id="grid-rows"></div>
-  </div>
-</div>
-
-<!-- ═══════════════ SCREEN: RESULT (SOLO) ═══════════════ -->
-<div class="screen" id="screen-result">
-  <div class="result-header">
-    <div class="result-title">🎉 Spelet slut!</div>
-    <div class="result-score" id="result-score">0</div>
-    <div class="result-subtitle" id="result-subtitle">poäng</div>
-  </div>
-  <div class="result-grid-outer" id="result-grid-outer"></div>
-  <button class="btn-play-again" onclick="startSolo()">↺ Spela igen</button>
-  <button class="btn secondary" onclick="nav('screen-home')">⌂ Hem</button>
-</div>
-
 <!-- LETTER PICKER OVERLAY -->
 <div class="lp-overlay" id="lp-overlay" style="display:none;">
   <div class="lp-title" id="lp-title">Välj en bokstav</div>
@@ -419,592 +380,338 @@ body{background:var(--bg);font-family:'Nunito',sans-serif;color:var(--ink);min-h
 </div>
 
 <script>
-/* ═══════════════════════════════════════════════════════════
-   FIREBASE INIT (compat SDK — works everywhere)
-═══════════════════════════════════════════════════════════ */
-var fbConfig = {
-  apiKey: "AIzaSyDbqZ68ZvgpZnZQ3VVfYT2gwDPtHYVxenY",
-  authDomain: "wordbraidgame.firebaseapp.com",
-  databaseURL: "https://wordbraidgame-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "wordbraidgame",
-  storageBucket: "wordbraidgame.firebasestorage.app",
-  messagingSenderId: "123419139466",
-  appId: "1:123419139466:web:fa92f2cd7c7330068efc73"
-};
+/* ── Firebase ── */
+firebase.initializeApp({
+  apiKey:"AIzaSyDbqZ68ZvgpZnZQ3VVfYT2gwDPtHYVxenY",
+  authDomain:"wordbraidgame.firebaseapp.com",
+  databaseURL:"https://wordbraidgame-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:"wordbraidgame",
+  storageBucket:"wordbraidgame.firebasestorage.app",
+  messagingSenderId:"123419139466",
+  appId:"1:123419139466:web:fa92f2cd7c7330068efc73"
+});
+var db=firebase.database();
+function fbSet(p,v){return db.ref(p).set(v);}
+function fbGet(p){return db.ref(p).once('value').then(function(s){return s.val();});}
+function fbDel(p){return db.ref(p).remove();}
+function fbOn(p,cb){var r=db.ref(p);r.on('value',function(s){cb(s.val());});return function(){r.off();};}
 
-var fbApp = firebase.initializeApp(fbConfig);
-var db    = firebase.database();
-
-// Simple Firebase helpers
-function fbSet(path, val)  { return db.ref(path).set(val); }
-function fbGet(path)       { return db.ref(path).once('value').then(s => s.val()); }
-function fbDel(path)       { return db.ref(path).remove(); }
-function fbListen(path, cb){ var r = db.ref(path); r.on('value', s => cb(s.val())); return () => r.off(); }
-
-/* ═══════════════════════════════════════════════════════════
-   NAVIGATION
-═══════════════════════════════════════════════════════════ */
-function nav(id) {
-  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
-  var s = document.getElementById(id);
-  if (s) { s.classList.add('active'); try{ window.scrollTo(0,0); }catch(e){} }
+/* ── Nav ── */
+function nav(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  var s=document.getElementById(id);
+  if(s){s.classList.add('active');try{window.scrollTo(0,0);}catch(e){}}
 }
 
-/* ═══════════════════════════════════════════════════════════
-   PLAYER DATA
-═══════════════════════════════════════════════════════════ */
-function loadP() {
-  try { return JSON.parse(localStorage.getItem('ordflata_p3')) || defP(); } catch(e) { return defP(); }
-}
-function saveP(p) { try { localStorage.setItem('ordflata_p3', JSON.stringify(p)); } catch(e){} }
-function defP() {
-  return {name:'Spelaren',games:0,bestScore:0,totalWords:0,totalScore:0,history:[],xp:30,streak:0,mpWins:0,mpGames:0};
-}
+/* ── Player data ── */
+var STORE_KEY='of_p5';
+function loadP(){try{return JSON.parse(localStorage.getItem(STORE_KEY))||defP();}catch(e){return defP();}}
+function saveP(p){try{localStorage.setItem(STORE_KEY,JSON.stringify(p));}catch(e){}}
+function defP(){return{name:'Spelaren',games:0,bestScore:0,totalWords:0,totalScore:0,history:[],xp:0,streak:0,mpWins:0,mpGames:0};}
+function tx(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
+function ss(id,k,v){var e=document.getElementById(id);if(e)e.style[k]=v;}
 
-function refreshUI() {
-  var p = loadP();
-  setTxt('home-username', p.name);
-  setTxt('profile-name', p.name);
-  setTxt('profile-handle', '@' + p.name.toLowerCase().replace(/\s+/g,''));
-  setTxt('home-games', p.games);
-  setTxt('home-best', p.bestScore);
-  setTxt('home-words', p.totalWords);
-  setTxt('stat-games', p.games);
-  setTxt('stat-best', p.bestScore);
-  setTxt('stat-avg', p.games ? Math.round(p.totalScore/p.games) : 0);
-  setTxt('stat-words', p.totalWords);
-  setTxt('stat-streak', (p.streak||0) + ' 🔥');
-  setTxt('stat-mpwins', p.mpWins||0);
-  setTxt('stat-mpgames', p.mpGames||0);
-  var xp = Math.min(100, p.xp % 100);
-  setStyle('home-xp-bar', 'width', xp+'%');
-  setStyle('profile-xp-bar', 'width', xp+'%');
-  setTxt('home-xp-label', xp+'/100 XP');
-  setTxt('profile-xp-label', xp+'/100 XP');
-  var lvl = Math.floor(p.xp/100)+1;
-  var titles = ['Nybörjare','Ordbyggare','Ordmakare','Ordmästare','Lexikon'];
-  setTxt('home-level', 'Nivå '+lvl+' · '+titles[Math.min(lvl-1,4)]);
-  // History
-  var list = document.getElementById('history-list');
-  if (list) {
-    if (!p.history || !p.history.length) {
-      list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:.85rem;font-weight:700;">Inga spel ännu!</div>';
-    } else {
-      list.innerHTML = p.history.slice().reverse().slice(0,10).map(function(h) {
-        return '<div class="history-item"><div class="hi-icon">'+(h.mp?'⚡':'🎮')+'</div><div class="hi-text"><div class="hi-title">'+(h.mp?'Multiplayer':'Enspelar')+'</div><div class="hi-sub">'+h.date+(h.words?' · '+h.words+' ord':'')+(h.result?' · '+h.result:'')+'</div></div><div class="hi-score">'+h.score+'p</div></div>';
-      }).join('');
-    }
+function refreshUI(){
+  var p=loadP();
+  tx('home-username',p.name);tx('profile-name',p.name);
+  tx('profile-handle','@'+p.name.toLowerCase().replace(/\s+/g,''));
+  tx('home-games',p.games);tx('home-best',p.bestScore);tx('home-words',p.totalWords);
+  tx('stat-games',p.games);tx('stat-best',p.bestScore);
+  tx('stat-avg',p.games?Math.round(p.totalScore/p.games):0);
+  tx('stat-words',p.totalWords);tx('stat-streak',(p.streak||0)+' 🔥');
+  tx('stat-mpwins',p.mpWins||0);tx('stat-mpgames',p.mpGames||0);
+  var xp=Math.min(100,p.xp%100);
+  ss('home-xp-bar','width',xp+'%');ss('profile-xp-bar','width',xp+'%');
+  tx('home-xp-label',xp+'/100 XP');tx('profile-xp-label',xp+'/100 XP');
+  var lvl=Math.floor(p.xp/100)+1;
+  var tits=['Nybörjare','Ordbyggare','Ordmakare','Ordmästare','Lexikon'];
+  tx('home-level','Nivå '+lvl+' · '+tits[Math.min(lvl-1,4)]);
+  var list=document.getElementById('history-list');
+  if(list){
+    if(!p.history||!p.history.length){list.innerHTML='<div style="text-align:center;padding:20px;color:var(--muted);font-size:.85rem;font-weight:700;">Inga spel ännu!</div>';}
+    else{list.innerHTML=p.history.slice().reverse().slice(0,10).map(function(h){return'<div class="history-item"><div class="hi-icon">'+(h.mp?'⚡':'🎮')+'</div><div class="hi-text"><div class="hi-title">'+(h.mp?'Multiplayer':'Enspelar')+'</div><div class="hi-sub">'+h.date+(h.words?' · '+h.words+' ord':'')+(h.result?' · '+h.result:'')+'</div></div><div class="hi-score">'+h.score+'p</div></div>';}).join('');}
   }
-  // Achievements
-  function ach(id, u) { var e=document.getElementById(id); if(e) e.classList.toggle('locked',!u); }
-  ach('ach-first', p.totalWords>0);
-  ach('ach-5words', p.history && p.history.some(function(h){ return h.words>=5; }));
-  ach('ach-score20', p.bestScore>=20);
-  ach('ach-score35', p.bestScore>=35);
-  ach('ach-fullboard', p.games>0);
-  ach('ach-10games', p.games>=10);
-  ach('ach-mpwin', (p.mpWins||0)>=1);
-  ach('ach-mp5', (p.mpGames||0)>=5);
-  ach('ach-tricky', p.gaveHardLetter||false);
+  function ach(id,u){var e=document.getElementById(id);if(e)e.classList.toggle('locked',!u);}
+  ach('ach-first',p.totalWords>0);
+  ach('ach-5words',p.history&&p.history.some(function(h){return h.words>=5;}));
+  ach('ach-score20',p.bestScore>=20);ach('ach-score35',p.bestScore>=35);
+  ach('ach-fullboard',p.games>0);ach('ach-10games',p.games>=10);
+  ach('ach-mpwin',(p.mpWins||0)>=1);ach('ach-mp5',(p.mpGames||0)>=5);
+  ach('ach-tricky',p.gaveHardLetter||false);
+}
+function editProfile(){
+  var p=loadP();var n=prompt('Ditt namn:',p.name);
+  if(n&&n.trim()){p.name=n.trim();saveP(p);refreshUI();}
 }
 
-function editProfile() {
-  var p = loadP();
-  var name = prompt('Ditt namn:', p.name);
-  if (name && name.trim()) { p.name = name.trim(); saveP(p); refreshUI(); }
-}
+/* ── Word / grid helpers ── */
+var WS=new Set();
+var POOL=('AAAAAAAAAA'+'BBBBB'+'CCCCC'+'DDDDDDD'+'EEEEEEEEEE'+'FFFFF'+'GGGGG'+'HHHHH'+'IIIIIIIII'+'JJJJ'+'KKKKKK'+'LLLLLLL'+'MMMMMMM'+'NNNNNNNNN'+'OOOOOOOOO'+'PPPPPP'+'RRRRRRRR'+'SSSSSSSSS'+'TTTTTTTTT'+'UUUUUUU'+'VVVVV'+'ÄÄÄÄÄ'+'ÖÖÖÖ'+'ÅÅÅÅ').split('');
+function rl(){return POOL[Math.floor(Math.random()*POOL.length)];}
+function r3(){var s=new Set();while(s.size<3)s.add(POOL[Math.floor(Math.random()*POOL.length)]);return Array.from(s);}
+function gc(){var c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';return Array.from({length:6},function(){return c[Math.floor(Math.random()*c.length)];}).join('');}
+function vw(w){return w.length>=2&&WS.has(w.toLowerCase());}
 
-function setTxt(id, v) { var e=document.getElementById(id); if(e) e.textContent=v; }
-function setStyle(id, prop, v) { var e=document.getElementById(id); if(e) e.style[prop]=v; }
-
-/* ═══════════════════════════════════════════════════════════
-   WORD LIST & HELPERS
-═══════════════════════════════════════════════════════════ */
-var wordSet = new Set();
-var POOL = ('AAAAAAAAAA'+'BBBBB'+'CCCCC'+'DDDDDDD'+'EEEEEEEEEE'+'FFFFF'+'GGGGG'+'HHHHH'+'IIIIIIIII'+'JJJJ'+'KKKKKK'+'LLLLLLL'+'MMMMMMM'+'NNNNNNNNN'+'OOOOOOOOO'+'PPPPPP'+'RRRRRRRR'+'SSSSSSSSS'+'TTTTTTTTT'+'UUUUUUU'+'VVVVV'+'ÄÄÄÄÄ'+'ÖÖÖÖ'+'ÅÅÅÅ').split('');
-
-function rndLetter() { return POOL[Math.floor(Math.random()*POOL.length)]; }
-function rnd3() { var s=new Set(); while(s.size<3) s.add(POOL[Math.floor(Math.random()*POOL.length)]); return Array.from(s); }
-function genCode() { var c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; return Array.from({length:6},function(){ return c[Math.floor(Math.random()*c.length)]; }).join(''); }
-function validWord(w) { return w.length>=2 && wordSet.has(w.toLowerCase()); }
-function wScore(len) { return len; }
-
-function longestInLine(line) {
-  var best=null, bs=-1, blocks=[];
-  for (var i=0;i<=5;i++) {
-    var ch=i<5?line[i]:'';
-    if(ch!==''&&bs===-1) bs=i;
-    else if((ch===''||i===5)&&bs!==-1){ blocks.push({start:bs,end:i-1}); bs=-1; }
-  }
-  blocks.forEach(function(bl) {
-    for(var s=bl.start;s<=bl.end;s++) for(var e=s+1;e<=bl.end;e++) {
-      var seg=line.slice(s,e+1).join('').toLowerCase();
-      if(validWord(seg)&&(!best||seg.length>best.word.length)) best={word:seg,start:s};
-    }
-  });
+function longest(line){
+  var best=null,bs=-1,blocks=[];
+  for(var i=0;i<=5;i++){var ch=i<5?line[i]:'';if(ch!==''&&bs===-1)bs=i;else if((ch===''||i===5)&&bs!==-1){blocks.push({s:bs,e:i-1});bs=-1;}}
+  blocks.forEach(function(b){for(var s=b.s;s<=b.e;s++)for(var e=s+1;e<=b.e;e++){var seg=line.slice(s,e+1).join('').toLowerCase();if(vw(seg)&&(!best||seg.length>best.word.length))best={word:seg,start:s};}});
   return best;
 }
-
-function calcScore(state) {
+function calcSc(state){
   var nw=[];
-  for(var r=0;r<5;r++){
-    var best=longestInLine(state.grid[r]);
-    var prev=state.linesBest[r],pp=prev?prev.pts:0,bp=best?wScore(best.word.length):0;
-    if(best&&bp>pp){state.score+=bp-pp;state.lineScores[r]=bp;var cells=Array.from({length:best.word.length},function(_,i){return{r:r,c:best.start+i};});state.linesBest[r]={word:best.word,start:best.start,pts:bp,cells:cells};nw.push({dir:'rad',pts:bp,key:'R'+r+'-best',cells:cells});}
-  }
-  for(var c=0;c<5;c++){
-    var col=state.grid.map(function(row){return row[c];});
-    var best2=longestInLine(col);
-    var prev2=state.linesBest[5+c],pp2=prev2?prev2.pts:0,bp2=best2?wScore(best2.word.length):0;
-    if(best2&&bp2>pp2){state.score+=bp2-pp2;state.lineScores[5+c]=bp2;var cells2=Array.from({length:best2.word.length},function(_,i){return{r:best2.start+i,c:c};});state.linesBest[5+c]={word:best2.word,start:best2.start,pts:bp2,cells:cells2};nw.push({dir:'kol',pts:bp2,key:'C'+c+'-best',cells:cells2});}
-  }
+  for(var r=0;r<5;r++){var b=longest(state.grid[r]);var pv=state.linesBest[r],pp=pv?pv.pts:0,bp=b?b.word.length:0;if(b&&bp>pp){state.score+=bp-pp;state.lineScores[r]=bp;var cells=Array.from({length:b.word.length},function(_,i){return{r:r,c:b.start+i};});state.linesBest[r]={word:b.word,start:b.start,pts:bp,cells:cells};nw.push({key:'R'+r,cells:cells});}}
+  for(var c=0;c<5;c++){var col=state.grid.map(function(row){return row[c];});var b2=longest(col);var pv2=state.linesBest[5+c],pp2=pv2?pv2.pts:0,bp2=b2?b2.word.length:0;if(b2&&bp2>pp2){state.score+=bp2-pp2;state.lineScores[5+c]=bp2;var cells2=Array.from({length:b2.word.length},function(_,i){return{r:b2.start+i,c:c};});state.linesBest[5+c]={word:b2.word,start:b2.start,pts:bp2,cells:cells2};nw.push({key:'C'+c,cells:cells2});}}
   return nw;
 }
-
-function doHighlight(state, pfx) {
+function doHL(state,pfx){
   var cm={};
-  state.linesBest.forEach(function(best,idx){
-    if(!best)return; var dir=idx<5?'rad':'kol';
-    (best.cells||[]).forEach(function(cell){ var k=cell.r+'-'+cell.c; if(!cm[k])cm[k]=new Set(); cm[k].add(dir); });
-  });
-  for(var r=0;r<5;r++) for(var c=0;c<5;c++){
-    var el=document.getElementById(pfx+r+'-'+c); if(!el) continue;
-    var dirs=cm[r+'-'+c]; el.classList.remove('hi-row','hi-col','hi-both');
-    if(dirs){ var row=dirs.has('rad'),col=dirs.has('kol');
-      if(row&&col) el.classList.add('hi-both');
-      else if(row) el.classList.add('hi-row');
-      else if(col) el.classList.add('hi-col');
-    }
-  }
+  state.linesBest.forEach(function(b,idx){if(!b)return;var d=idx<5?'rad':'kol';(b.cells||[]).forEach(function(c){var k=c.r+'-'+c.c;if(!cm[k])cm[k]=new Set();cm[k].add(d);});});
+  for(var r=0;r<5;r++)for(var c=0;c<5;c++){var el=document.getElementById(pfx+r+'-'+c);if(!el)continue;var d=cm[r+'-'+c];el.classList.remove('hi-row','hi-col','hi-both');if(d){var row=d.has('rad'),col=d.has('kol');if(row&&col)el.classList.add('hi-both');else if(row)el.classList.add('hi-row');else if(col)el.classList.add('hi-col');}}
 }
-
-function updateLabels(state, rPfx, cPfx) {
-  for(var r=0;r<5;r++){var el=document.getElementById(rPfx+r);if(!el)continue;var b=state.linesBest[r];el.querySelector('.rl-pts').textContent=b?state.lineScores[r]+'p':'—';el.querySelector('.rl-word').textContent=b?b.word.toUpperCase():'';el.classList.toggle('lit',!!b);}
-  for(var c=0;c<5;c++){var el2=document.getElementById(cPfx+c);if(!el2)continue;var b2=state.linesBest[5+c];el2.querySelector('.cl-pts').textContent=b2?state.lineScores[5+c]+'p':'—';el2.querySelector('.cl-word').textContent=b2?b2.word.toUpperCase():'';el2.classList.toggle('lit',!!b2);}
+function doLbls(state,rp,cp){
+  for(var r=0;r<5;r++){var el=document.getElementById(rp+r);if(!el)continue;var b=state.linesBest[r];el.querySelector('.rl-pts').textContent=b?state.lineScores[r]+'p':'—';el.querySelector('.rl-word').textContent=b?b.word.toUpperCase():'';el.classList.toggle('lit',!!b);}
+  for(var c=0;c<5;c++){var el2=document.getElementById(cp+c);if(!el2)continue;var b2=state.linesBest[5+c];el2.querySelector('.cl-pts').textContent=b2?state.lineScores[5+c]+'p':'—';el2.querySelector('.cl-word').textContent=b2?b2.word.toUpperCase():'';el2.classList.toggle('lit',!!b2);}
 }
-
-function buildGridDOM(rowsId, colsId, state, pfx, clickFn) {
-  var cr=document.getElementById(colsId), re=document.getElementById(rowsId);
-  if(!cr||!re) return; cr.innerHTML=''; re.innerHTML='';
+function buildGrid(rowsId,colsId,state,pfx,fn){
+  var cr=document.getElementById(colsId),re=document.getElementById(rowsId);if(!cr||!re)return;cr.innerHTML='';re.innerHTML='';
   cr.appendChild(Object.assign(document.createElement('div'),{className:'col-label-spacer'}));
   for(var c=0;c<5;c++){var d=document.createElement('div');d.className='col-label';d.id=pfx+'col-label-'+c;d.innerHTML='<span class="cl-word"></span><span class="cl-pts">—</span>';cr.appendChild(d);}
   for(var r=0;r<5;r++){
     var rd=document.createElement('div');rd.className='grid-row';
-    var rl=document.createElement('div');rl.className='row-label';rl.id=pfx+'row-label-'+r;rl.innerHTML='<span class="rl-pts">—</span><span class="rl-word"></span>';rd.appendChild(rl);
-    for(var c2=0;c2<5;c2++){
-      var cell=document.createElement('div');cell.className='cell';cell.id=pfx+'cell-'+r+'-'+c2;
-      (function(rr,cc){cell.addEventListener('click',function(){clickFn(rr,cc);});})(r,c2);
-      if(state.grid[r]&&state.grid[r][c2]){cell.textContent=state.grid[r][c2];cell.classList.add('filled');}
-      rd.appendChild(cell);
-    }
+    var rl2=document.createElement('div');rl2.className='row-label';rl2.id=pfx+'row-label-'+r;rl2.innerHTML='<span class="rl-pts">—</span><span class="rl-word"></span>';rd.appendChild(rl2);
+    for(var c2=0;c2<5;c2++){var cell=document.createElement('div');cell.className='cell';cell.id=pfx+'cell-'+r+'-'+c2;(function(rr,cc){cell.addEventListener('click',function(){fn(rr,cc);});})(r,c2);if(state.grid[r]&&state.grid[r][c2]){cell.textContent=state.grid[r][c2];cell.classList.add('filled');}rd.appendChild(cell);}
     re.appendChild(rd);
   }
-  doHighlight(state, pfx+'cell-');
-  updateLabels(state, pfx+'row-label-', pfx+'col-label-');
+  doHL(state,pfx+'cell-');doLbls(state,pfx+'row-label-',pfx+'col-label-');
 }
-
-function buildResultGridDOM(outerId, state) {
-  var outer=document.getElementById(outerId); if(!outer) return; outer.innerHTML='';
-  var cm={};
-  state.linesBest.forEach(function(best,idx){
-    if(!best)return;var dir=idx<5?'rad':'kol';
-    (best.cells||[]).forEach(function(cell){var k=cell.r+'-'+cell.c;if(!cm[k])cm[k]=new Set();cm[k].add(dir);});
-  });
+function buildResGrid(oid,state){
+  var o=document.getElementById(oid);if(!o)return;o.innerHTML='';
+  var cm={};state.linesBest.forEach(function(b,idx){if(!b)return;var d=idx<5?'rad':'kol';(b.cells||[]).forEach(function(c){var k=c.r+'-'+c.c;if(!cm[k])cm[k]=new Set();cm[k].add(d);});});
   var cr=document.createElement('div');cr.className='col-labels-row';cr.appendChild(document.createElement('div'));
-  for(var c=0;c<5;c++){var d=document.createElement('div');d.className='col-label';var b=state.linesBest[5+c];if(b){d.classList.add('lit');d.innerHTML='<span class="cl-word">'+b.word.toUpperCase()+'</span><span class="cl-pts">'+state.lineScores[5+c]+'p</span>';}else{d.innerHTML='<span class="cl-pts">—</span>';}cr.appendChild(d);}
-  outer.appendChild(cr);
+  for(var c=0;c<5;c++){var d=document.createElement('div');d.className='col-label';var b=state.linesBest[5+c];if(b){d.classList.add('lit');d.innerHTML='<span class="cl-word">'+b.word.toUpperCase()+'</span><span class="cl-pts">'+state.lineScores[5+c]+'p</span>';}else d.innerHTML='<span class="cl-pts">—</span>';cr.appendChild(d);}
+  o.appendChild(cr);
   var re=document.createElement('div');re.className='grid-rows';
-  for(var r=0;r<5;r++){
-    var rd=document.createElement('div');rd.className='grid-row';
-    var rl=document.createElement('div');rl.className='row-label';var rb=state.linesBest[r];
-    if(rb){rl.classList.add('lit');rl.innerHTML='<span class="rl-pts">'+state.lineScores[r]+'p</span><span class="rl-word">'+rb.word.toUpperCase()+'</span>';}else{rl.innerHTML='<span class="rl-pts">—</span>';}
-    rd.appendChild(rl);
-    for(var c2=0;c2<5;c2++){
-      var cell=document.createElement('div');cell.className='result-cell';
-      cell.textContent=(state.grid[r]&&state.grid[r][c2])||'';
-      var dirs=cm[r+'-'+c2];if(dirs){var row=dirs.has('rad'),col=dirs.has('kol');if(row&&col)cell.classList.add('hi-both');else if(row)cell.classList.add('hi-row');else if(col)cell.classList.add('hi-col');}
-      cell.style.animation='popIn .3s '+(r*5+c2)*26+'ms cubic-bezier(.18,.89,.32,1.28) both';
-      rd.appendChild(cell);
-    }
-    re.appendChild(rd);
-  }
-  outer.appendChild(re);
+  for(var r=0;r<5;r++){var rd=document.createElement('div');rd.className='grid-row';var rl3=document.createElement('div');rl3.className='row-label';var rb=state.linesBest[r];if(rb){rl3.classList.add('lit');rl3.innerHTML='<span class="rl-pts">'+state.lineScores[r]+'p</span><span class="rl-word">'+rb.word.toUpperCase()+'</span>';}else rl3.innerHTML='<span class="rl-pts">—</span>';rd.appendChild(rl3);for(var c2=0;c2<5;c2++){var cell=document.createElement('div');cell.className='result-cell';cell.textContent=(state.grid[r]&&state.grid[r][c2])||'';var dirs=cm[r+'-'+c2];if(dirs){var row=dirs.has('rad'),col=dirs.has('kol');if(row&&col)cell.classList.add('hi-both');else if(row)cell.classList.add('hi-row');else if(col)cell.classList.add('hi-col');}cell.style.animation='popIn .3s '+(r*5+c2)*26+'ms cubic-bezier(.18,.89,.32,1.28) both';rd.appendChild(cell);}re.appendChild(rd);}
+  o.appendChild(re);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   SOLO GAME
-═══════════════════════════════════════════════════════════ */
-var sg = {};
-
-function startSolo() {
-  sg = {grid:Array.from({length:5},function(){return new Array(5).fill('');}),cur:rndLetter(),score:0,placed:0,over:false,lineScores:new Array(10).fill(0),linesBest:new Array(10).fill(null),foundWords:[]};
-  buildGridDOM('grid-rows','col-labels-row',sg,'cell-',placeSolo);
-  renderSolo(); nav('screen-game');
+/* ── Solo ── */
+var sg={};
+function startSolo(){
+  sg={grid:Array.from({length:5},function(){return new Array(5).fill('');}),cur:rl(),score:0,placed:0,over:false,lineScores:new Array(10).fill(0),linesBest:new Array(10).fill(null),foundWords:[]};
+  buildGrid('grid-rows','col-labels-row',sg,'cell-',placeSolo);
+  renderSolo();nav('screen-game');
 }
-
-function placeSolo(row, col) {
-  if(sg.over||sg.grid[row][col]!=='') return;
-  sg.grid[row][col]=sg.cur; sg.placed++;
+function placeSolo(row,col){
+  if(sg.over||sg.grid[row][col]!=='')return;
+  sg.grid[row][col]=sg.cur;sg.placed++;
   var cell=document.getElementById('cell-'+row+'-'+col);
-  cell.textContent=sg.cur; cell.classList.add('filled','placing');
+  cell.textContent=sg.cur;cell.classList.add('filled','placing');
   setTimeout(function(){cell.classList.remove('placing');},420);
-  var nw=calcScore(sg); doHighlight(sg,'cell-');
-  sg.cur=rndLetter(); renderSolo();
+  var nw=calcSc(sg);doHL(sg,'cell-');sg.cur=rl();renderSolo();
   nw.forEach(function(w){var i=sg.foundWords.findIndex(function(f){return f.key===w.key;});if(i!==-1)sg.foundWords.splice(i,1);sg.foundWords.push(w);});
-  if(sg.placed>=25) setTimeout(endSolo,700);
+  if(sg.placed>=25)setTimeout(endSolo,700);
 }
-
-function renderSolo() {
-  var cl=document.getElementById('current-letter'); if(!cl) return;
-  cl.textContent=sg.cur; cl.style.animation='none'; void cl.offsetWidth; cl.style.animation='';
+function renderSolo(){
+  var cl=document.getElementById('current-letter');if(!cl)return;
+  cl.textContent=sg.cur;cl.style.animation='none';void cl.offsetWidth;cl.style.animation='';
   var se=document.getElementById('total-score');
-  var prev=parseInt(se.textContent)||0; se.textContent=sg.score;
+  var prev=parseInt(se.textContent)||0;se.textContent=sg.score;
   if(sg.score>prev){se.classList.remove('bump');void se.offsetWidth;se.classList.add('bump');setTimeout(function(){se.classList.remove('bump');},380);}
-  document.getElementById('tiles-left').textContent=25-sg.placed;
-  updateLabels(sg,'row-label-','col-label-');
+  tx('tiles-left',25-sg.placed);doLbls(sg,'row-label-','col-label-');
+}
+function endSolo(){
+  sg.over=true;var p=loadP();p.games++;if(sg.score>p.bestScore)p.bestScore=sg.score;
+  p.totalWords+=sg.foundWords.length;p.totalScore+=sg.score;p.xp+=sg.score+5;
+  p.history=p.history||[];p.history.push({score:sg.score,words:sg.foundWords.length,date:new Date().toLocaleDateString('sv-SE'),mp:false});
+  if(p.history.length>50)p.history=p.history.slice(-50);saveP(p);refreshUI();
+  tx('result-score',sg.score);tx('result-subtitle','poäng · '+sg.foundWords.length+' ord');
+  buildResGrid('result-grid-outer',sg);nav('screen-result');
 }
 
-function endSolo() {
-  sg.over=true;
-  var p=loadP(); p.games++; if(sg.score>p.bestScore) p.bestScore=sg.score;
-  p.totalWords+=sg.foundWords.length; p.totalScore+=sg.score; p.xp+=sg.score+5;
-  p.history=p.history||[]; p.history.push({score:sg.score,words:sg.foundWords.length,date:new Date().toLocaleDateString('sv-SE'),mp:false});
-  if(p.history.length>50) p.history=p.history.slice(-50);
-  saveP(p); refreshUI();
-  setTxt('result-score', sg.score);
-  setTxt('result-subtitle', 'poäng · '+sg.foundWords.length+' ord');
-  buildResultGridDOM('result-grid-outer',sg);
-  nav('screen-result');
-}
-
-/* ═══════════════════════════════════════════════════════════
-   MULTIPLAYER
-═══════════════════════════════════════════════════════════ */
-var mp = {code:null, role:null, myState:null, unsubscribe:null, phase:null, pickerShown:false};
-
-function emptyPlayer(name) {
-  return {name:name||'Spelaren', grid:Array.from({length:5},function(){return new Array(5).fill('');}), score:0, placed:0, letter:null, lineScores:new Array(10).fill(0), linesBest:new Array(10).fill(null)};
-}
-
-function leaveLobby() {
-  cancelGame(); nav('screen-play');
-}
-
-function createGame() {
-  var btn=document.getElementById('btn-create');
-  btn.disabled=true; btn.textContent='Skapar…';
-  var p=loadP(); var code=genCode();
-  mp.code=code; mp.role='host';
-  var gameData={
-    code:code, status:'waiting', created:Date.now(),
-    host:emptyPlayer(p.name), guest:null,
-    turn:'host', picker:'guest', options:null
-  };
-  fbSet('games/'+code, gameData).then(function(){
-    document.getElementById('game-code-txt').textContent=code;
+/* ── Multiplayer ── */
+var mp={code:null,role:null,myState:null,unsub:null,phase:null,shown:false};
+function emptyP(name){return{name:name||'Spelaren',grid:Array.from({length:5},function(){return new Array(5).fill('');}),score:0,placed:0,letter:null,lineScores:new Array(10).fill(0),linesBest:new Array(10).fill(null)};}
+function leaveLobby(){cancelGame();nav('screen-play');}
+function createGame(){
+  var btn=document.getElementById('btn-create');btn.disabled=true;btn.textContent='Skapar…';
+  var p=loadP();var code=gc();mp.code=code;mp.role='host';
+  fbSet('games/'+code,{code:code,status:'waiting',created:Date.now(),host:emptyP(p.name),guest:null,turn:'host',picker:'guest',options:null}).then(function(){
+    tx('game-code-txt',code);
     document.getElementById('create-area').style.display='none';
     document.getElementById('code-area').style.display='block';
-    btn.disabled=false; btn.textContent='🎮 Skapa nytt spel';
-    // Listen for guest
-    mp.unsubscribe = fbListen('games/'+code, function(gs){
-      if(!gs) return;
-      if(gs.guest && gs.status==='active') {
-        if(mp.unsubscribe){ mp.unsubscribe(); mp.unsubscribe=null; }
-        startMpGame(gs);
-      }
+    btn.disabled=false;btn.textContent='🎮 Skapa nytt spel';
+    mp.unsub=fbOn('games/'+code,function(gs){
+      if(!gs)return;
+      if(gs.guest&&gs.status==='active'){if(mp.unsub){mp.unsub();mp.unsub=null;}startMpGame(gs);}
     });
-  }).catch(function(err){
-    clearTimeout(fbTimeout);
-    btn.disabled=false; btn.textContent='🎮 Skapa nytt spel';
-    alert('Kunde inte skapa spel: '+err.message);
-  });
+  }).catch(function(e){btn.disabled=false;btn.textContent='🎮 Skapa nytt spel';alert('Firebase-fel: '+e.message);});
 }
-
-function cancelGame() {
-  if(mp.unsubscribe){ mp.unsubscribe(); mp.unsubscribe=null; }
-  if(mp.code) fbDel('games/'+mp.code);
-  mp.code=null; mp.role=null;
+function cancelGame(){
+  if(mp.unsub){mp.unsub();mp.unsub=null;}
+  if(mp.code)fbDel('games/'+mp.code);
+  mp.code=null;mp.role=null;
   document.getElementById('create-area').style.display='block';
   document.getElementById('code-area').style.display='none';
-  setTxt('game-code-txt','——');
+  tx('game-code-txt','——');
 }
-
-function joinGame() {
-  var input=document.getElementById('join-input');
-  var code=input.value.trim().toUpperCase();
-  var errEl=document.getElementById('join-error'); errEl.textContent='';
-  if(code.length!==6){ errEl.textContent='Koden måste vara 6 tecken.'; return; }
+function joinGame(){
+  var input=document.getElementById('join-input');var code=input.value.trim().toUpperCase();
+  var errEl=document.getElementById('join-error');errEl.textContent='';
+  if(code.length!==6){errEl.textContent='Koden måste vara 6 tecken.';return;}
   var p=loadP();
   fbGet('games/'+code).then(function(gs){
-    if(!gs){ errEl.textContent='Inget spel med den koden.'; return; }
-    if(gs.status!=='waiting'){ errEl.textContent='Spelet är inte tillgängligt.'; return; }
-    mp.code=code; mp.role='guest';
-    var options=rnd3();
-    return fbSet('games/'+code, Object.assign({},gs,{
-      guest:emptyPlayer(p.name),
-      status:'active',
-      turn:'host', picker:'guest',
-      options:options
-    })).then(function(){
+    if(!gs){errEl.textContent='Inget spel med den koden.';return;}
+    if(gs.status!=='waiting'){errEl.textContent='Spelet är inte tillgängligt.';return;}
+    mp.code=code;mp.role='guest';var opts=r3();
+    return fbSet('games/'+code,Object.assign({},gs,{guest:emptyP(p.name),status:'active',turn:'host',picker:'guest',options:opts})).then(function(){
       return fbGet('games/'+code);
-    }).then(function(fresh){
-      input.value='';
-      startMpGame(fresh);
-    });
-  }).catch(function(err){
-    errEl.textContent='Fel: '+err.message;
-  });
+    }).then(function(fresh){input.value='';startMpGame(fresh);});
+  }).catch(function(e){errEl.textContent='Fel: '+e.message;});
 }
-
-function startMpGame(gs) {
-  var myKey=mp.role, oppKey=mp.role==='host'?'guest':'host';
-  var myData=gs[myKey];
-  mp.myState={
-    grid:myData.grid.map(function(r){return r.slice();}),
-    score:myData.score||0, placed:myData.placed||0, over:false,
-    lineScores:(myData.lineScores||new Array(10).fill(0)).slice(),
-    linesBest:(myData.linesBest||new Array(10).fill(null)).map(function(b){return b?Object.assign({},b):null;}),
-    foundWords:[]
-  };
-  mp.pickerShown=false;
-  var oppName=(gs[oppKey]&&gs[oppKey].name)||'Motståndare';
-  setTxt('opp-name', oppName);
-  setTxt('mp-title', 'vs '+oppName);
-  buildGridDOM('mp-grid-rows','mp-col-row',mp.myState,'mpcell-',placeMp);
+function startMpGame(gs){
+  var mk=mp.role,ok=mp.role==='host'?'guest':'host';
+  var md=gs[mk];
+  mp.myState={grid:md.grid.map(function(r){return r.slice();}),score:md.score||0,placed:md.placed||0,over:false,lineScores:(md.lineScores||new Array(10).fill(0)).slice(),linesBest:(md.linesBest||new Array(10).fill(null)).map(function(b){return b?Object.assign({},b):null;}),foundWords:[]};
+  mp.shown=false;
+  var on=(gs[ok]&&gs[ok].name)||'Motståndare';
+  tx('opp-name',on);tx('mp-title','vs '+on);
+  buildGrid('mp-grid-rows','mp-col-row',mp.myState,'mpcell-',placeMp);
   nav('screen-mp-game');
-  if(mp.unsubscribe){ mp.unsubscribe(); mp.unsubscribe=null; }
-  mp.unsubscribe = fbListen('games/'+mp.code, onGameUpdate);
+  if(mp.unsub){mp.unsub();mp.unsub=null;}
+  mp.unsub=fbOn('games/'+mp.code,onGU);
 }
-
-function onGameUpdate(gs) {
-  if(!gs||!mp.myState) return;
-  var myKey=mp.role, oppKey=mp.role==='host'?'guest':'host';
-  var opp=gs[oppKey]||{};
-  setTxt('opp-name', opp.name||'Motståndare');
-  setTxt('opp-score', (opp.score||0)+'p');
-  setTxt('opp-tiles', (opp.placed||0)+'/25');
-  var banner=document.getElementById('turn-banner');
-  var turnText=document.getElementById('turn-text');
-  var myData=gs[myKey]||{};
-  if(gs.status==='done'){
-    if(mp.unsubscribe){ mp.unsubscribe(); mp.unsubscribe=null; }
-    document.getElementById('lp-overlay').style.display='none';
-    showMpResult(gs); return;
-  }
-  var iPlace = (gs.turn===myKey);   // I place a letter
-  var iPick  = (gs.picker===myKey); // I pick options for opponent
-  if(iPlace && gs.options && !(myData.letter)) {
-    // I see 3 options and choose which to place
-    mp.phase='choosing';
-    banner.className='turn-banner your-turn';
-    turnText.textContent='🎲 Välj vilken bokstav du vill placera!';
-    setTxt('mp-score', myData.score||0);
-    setTxt('mp-left', 25-(myData.placed||0));
-    if(!mp.pickerShown){ mp.pickerShown=true; showChooser(gs.options, gs); }
-  } else if(iPlace && myData.letter) {
-    // I have a letter assigned — place it
-    mp.phase='placing';
-    banner.className='turn-banner your-turn';
-    turnText.textContent='✅ Din tur — klicka på en ruta!';
-    var lEl=document.getElementById('mp-letter');
-    lEl.textContent=myData.letter; lEl.style.animation='none'; void lEl.offsetWidth; lEl.style.animation='';
-    setTxt('mp-score', myData.score||0);
-    setTxt('mp-left', 25-(myData.placed||0));
-    document.getElementById('lp-overlay').style.display='none';
-    mp.pickerShown=false;
-    syncMyGrid(myData);
-  } else if(iPick && !iPlace) {
-    // I pick 3 options to send to opponent
-    mp.phase='picking';
-    banner.className='turn-banner pick-phase';
-    turnText.textContent='🎲 Välj en bokstav till '+(opp.name||'motståndaren')+'!';
-    if(!mp.pickerShown){ mp.pickerShown=true; showPicker(opp.name||'motståndaren'); }
-  } else {
-    // Waiting
-    mp.phase='waiting';
-    banner.className='turn-banner their-turn';
-    turnText.textContent='⏳ Väntar på '+(opp.name||'motståndaren')+'…';
-    document.getElementById('lp-overlay').style.display='none';
-    mp.pickerShown=false;
+function onGU(gs){
+  if(!gs||!mp.myState)return;
+  var mk=mp.role,ok=mp.role==='host'?'guest':'host';
+  var opp=gs[ok]||{};
+  tx('opp-name',opp.name||'Motståndare');tx('opp-score',(opp.score||0)+'p');tx('opp-tiles',(opp.placed||0)+'/25');
+  var bn=document.getElementById('turn-banner'),tt=document.getElementById('turn-text'),md=gs[mk]||{};
+  if(gs.status==='done'){if(mp.unsub){mp.unsub();mp.unsub=null;}document.getElementById('lp-overlay').style.display='none';showMpResult(gs);return;}
+  var iP=(gs.turn===mk),iPk=(gs.picker===mk);
+  if(iP&&gs.options&&!md.letter){
+    mp.phase='choosing';bn.className='turn-banner your-turn';tt.textContent='🎲 Välj vilken bokstav du vill placera!';
+    tx('mp-score',md.score||0);tx('mp-left',25-(md.placed||0));
+    if(!mp.shown){mp.shown=true;showChooser(gs.options,gs);}
+  }else if(iP&&md.letter){
+    mp.phase='placing';bn.className='turn-banner your-turn';tt.textContent='✅ Din tur — klicka på en ruta!';
+    var lEl=document.getElementById('mp-letter');lEl.textContent=md.letter;lEl.style.animation='none';void lEl.offsetWidth;lEl.style.animation='';
+    tx('mp-score',md.score||0);tx('mp-left',25-(md.placed||0));
+    document.getElementById('lp-overlay').style.display='none';mp.shown=false;syncGrid(md);
+  }else if(iPk&&!iP){
+    mp.phase='picking';bn.className='turn-banner pick-phase';tt.textContent='🎲 Välj en bokstav till '+(opp.name||'motståndaren')+'!';
+    if(!mp.shown){mp.shown=true;showPicker(opp.name||'motståndaren');}
+  }else{
+    mp.phase='waiting';bn.className='turn-banner their-turn';tt.textContent='⏳ Väntar på '+(opp.name||'motståndaren')+'…';
+    document.getElementById('lp-overlay').style.display='none';mp.shown=false;
   }
 }
-
-function showChooser(options, gs) {
-  var myKey=mp.role, oppKey=mp.role==='host'?'guest':'host';
-  var oppName=(gs[oppKey]&&gs[oppKey].name)||'Motståndaren';
+function showChooser(opts,gs){
+  var ok=mp.role==='host'?'guest':'host';var on=(gs[ok]&&gs[ok].name)||'Motståndaren';
   document.getElementById('lp-overlay').style.display='flex';
-  setTxt('lp-title','Välj vilken bokstav du vill placera');
-  setTxt('lp-subtitle', oppName+' valde dessa — välj strategiskt!');
-  var optEl=document.getElementById('lp-options'); optEl.innerHTML='';
-  options.forEach(function(letter){
-    var btn=document.createElement('button'); btn.className='lp-btn'; btn.textContent=letter;
-    btn.onclick=function(){ confirmChosen(letter); };
-    optEl.appendChild(btn);
-  });
+  tx('lp-title','Välj vilken bokstav du vill placera');tx('lp-subtitle',on+' valde dessa — välj strategiskt!');
+  var oe=document.getElementById('lp-options');oe.innerHTML='';
+  opts.forEach(function(l){var b=document.createElement('button');b.className='lp-btn';b.textContent=l;b.onclick=function(){confirmChosen(l);};oe.appendChild(b);});
 }
-
-function confirmChosen(letter) {
-  document.getElementById('lp-overlay').style.display='none';
-  mp.pickerShown=false; mp.phase='placing';
-  fbSet('games/'+mp.code+'/'+mp.role+'/letter', letter)
-    .then(function(){ return fbSet('games/'+mp.code+'/options', null); })
-    .catch(function(e){ console.error('confirmChosen error:',e); });
+function confirmChosen(l){
+  document.getElementById('lp-overlay').style.display='none';mp.shown=false;mp.phase='placing';
+  fbSet('games/'+mp.code+'/'+mp.role+'/letter',l).then(function(){return fbSet('games/'+mp.code+'/options',null);});
 }
-
-function showPicker(oppName) {
-  var options=rnd3();
+function showPicker(on){
+  var opts=r3();
   document.getElementById('lp-overlay').style.display='flex';
-  setTxt('lp-title','Välj en bokstav till motståndaren');
-  setTxt('lp-subtitle', oppName+' måste placera den — välj strategiskt!');
-  var optEl=document.getElementById('lp-options'); optEl.innerHTML='';
-  options.forEach(function(letter){
-    var btn=document.createElement('button'); btn.className='lp-btn'; btn.textContent=letter;
-    btn.onclick=function(){ submitPick(letter, options); };
-    optEl.appendChild(btn);
-  });
+  tx('lp-title','Välj en bokstav till motståndaren');tx('lp-subtitle',on+' måste placera den — välj strategiskt!');
+  var oe=document.getElementById('lp-options');oe.innerHTML='';
+  opts.forEach(function(l){var b=document.createElement('button');b.className='lp-btn';b.textContent=l;b.onclick=function(){submitPick(l,opts);};oe.appendChild(b);});
 }
-
-function submitPick(chosen, allOptions) {
-  document.getElementById('lp-overlay').style.display='none';
-  mp.pickerShown=false;
-  // Track tricky letter achievement
+function submitPick(chosen,opts){
+  document.getElementById('lp-overlay').style.display='none';mp.shown=false;
   if(['Z','Q','X','Å'].indexOf(chosen)!==-1){var p=loadP();p.gaveHardLetter=true;saveP(p);}
-  var oppKey=mp.role==='host'?'guest':'host';
-  fbSet('games/'+mp.code+'/options', allOptions)
-    .then(function(){ return fbSet('games/'+mp.code+'/turn', oppKey); })
-    .then(function(){ return fbSet('games/'+mp.code+'/picker', mp.role); })
-    .catch(function(e){ console.error('submitPick error:',e); });
+  var ok=mp.role==='host'?'guest':'host';
+  fbSet('games/'+mp.code+'/options',opts).then(function(){return fbSet('games/'+mp.code+'/turn',ok);}).then(function(){return fbSet('games/'+mp.code+'/picker',mp.role);});
 }
-
-function placeMp(row, col) {
-  if(mp.phase!=='placing') return;
-  if(mp.myState.grid[row][col]!=='') return;
-  var myKey=mp.role, oppKey=mp.role==='host'?'guest':'host';
+function placeMp(row,col){
+  if(mp.phase!=='placing')return;
+  if(mp.myState.grid[row][col]!=='')return;
+  var mk=mp.role,ok=mp.role==='host'?'guest':'host';
   fbGet('games/'+mp.code).then(function(gs){
-    if(!gs) return;
-    var myData=gs[myKey]; if(!myData||!myData.letter) return;
-    var letter=myData.letter;
-    mp.myState.grid[row][col]=letter; mp.myState.placed++;
-    mp.myState.lineScores=(myData.lineScores||new Array(10).fill(0)).slice();
-    mp.myState.linesBest=(myData.linesBest||new Array(10).fill(null)).map(function(b){return b?Object.assign({},b):null;});
-    var nw=calcScore(mp.myState);
+    if(!gs)return;var md=gs[mk];if(!md||!md.letter)return;
+    var l=md.letter;
+    mp.myState.grid[row][col]=l;mp.myState.placed++;
+    mp.myState.lineScores=(md.lineScores||new Array(10).fill(0)).slice();
+    mp.myState.linesBest=(md.linesBest||new Array(10).fill(null)).map(function(b){return b?Object.assign({},b):null;});
+    var nw=calcSc(mp.myState);
     var cell=document.getElementById('mpcell-'+row+'-'+col);
-    if(cell){cell.textContent=letter;cell.classList.add('filled','placing');setTimeout(function(){cell.classList.remove('placing');},420);}
-    doHighlight(mp.myState,'mpcell-');
-    updateLabels(mp.myState,'mpcol-label-'.replace('col','row'),'mpcol-label-');
-    // fix: use correct prefixes
-    updateLabels(mp.myState, 'mprow-label-', 'mpcol-label-');
+    if(cell){cell.textContent=l;cell.classList.add('filled','placing');setTimeout(function(){cell.classList.remove('placing');},420);}
+    doHL(mp.myState,'mpcell-');doLbls(mp.myState,'mprow-label-','mpcol-label-');
     nw.forEach(function(w){var i=mp.myState.foundWords.findIndex(function(f){return f.key===w.key;});if(i!==-1)mp.myState.foundWords.splice(i,1);mp.myState.foundWords.push(w);});
-    setTxt('mp-score',mp.myState.score);
-    setTxt('mp-left',25-mp.myState.placed);
-    // Write to Firebase
-    var updatedMy=Object.assign({},myData,{
-      grid:mp.myState.grid.map(function(r){return r.slice();}),
-      score:mp.myState.score, placed:mp.myState.placed, letter:null,
-      lineScores:mp.myState.lineScores.slice(),
-      linesBest:mp.myState.linesBest.map(function(b){return b?Object.assign({},b):null;})
-    });
-    var oppPlaced=(gs[oppKey]&&gs[oppKey].placed)||0;
-    var bothDone=mp.myState.placed>=25&&oppPlaced>=25;
-    mp.phase='waiting'; mp.pickerShown=false;
-    var writes=[fbSet('games/'+mp.code+'/'+myKey, updatedMy)];
-    if(bothDone){
-      writes.push(fbSet('games/'+mp.code+'/status','done'));
-    } else {
-      writes.push(fbSet('games/'+mp.code+'/turn', oppKey));
-      writes.push(fbSet('games/'+mp.code+'/picker', myKey));
-      writes.push(fbSet('games/'+mp.code+'/options', null));
-    }
+    tx('mp-score',mp.myState.score);tx('mp-left',25-mp.myState.placed);
+    var um=Object.assign({},md,{grid:mp.myState.grid.map(function(r){return r.slice();}),score:mp.myState.score,placed:mp.myState.placed,letter:null,lineScores:mp.myState.lineScores.slice(),linesBest:mp.myState.linesBest.map(function(b){return b?Object.assign({},b):null;})});
+    var op=(gs[ok]&&gs[ok].placed)||0;var done=mp.myState.placed>=25&&op>=25;
+    mp.phase='waiting';mp.shown=false;
+    var writes=[fbSet('games/'+mp.code+'/'+mk,um)];
+    if(done)writes.push(fbSet('games/'+mp.code+'/status','done'));
+    else{writes.push(fbSet('games/'+mp.code+'/turn',ok));writes.push(fbSet('games/'+mp.code+'/picker',mk));writes.push(fbSet('games/'+mp.code+'/options',null));}
     return Promise.all(writes);
-  }).catch(function(e){ console.error('placeMp error:',e); });
-}
-
-function syncMyGrid(myData) {
-  if(!myData||!myData.grid) return;
-  for(var r=0;r<5;r++) for(var c=0;c<5;c++){
-    var stored=(myData.grid[r]&&myData.grid[r][c])||'';
-    var local=mp.myState.grid[r][c];
-    if(stored&&!local){
-      var cell=document.getElementById('mpcell-'+r+'-'+c);
-      if(cell){cell.textContent=stored;cell.classList.add('filled');}
-      mp.myState.grid[r][c]=stored;
-    }
-  }
-}
-
-function showMpResult(gs) {
-  var myKey=mp.role, oppKey=mp.role==='host'?'guest':'host';
-  var myScore=(gs[myKey]&&gs[myKey].score)||0;
-  var oppScore=(gs[oppKey]&&gs[oppKey].score)||0;
-  var myName=(gs[myKey]&&gs[myKey].name)||'Du';
-  var oppName=(gs[oppKey]&&gs[oppKey].name)||'Motståndare';
-  var won=myScore>oppScore, draw=myScore===oppScore;
-  // Save stats
-  var p=loadP(); p.mpGames=(p.mpGames||0)+1; if(won) p.mpWins=(p.mpWins||0)+1;
-  p.history=p.history||[];
-  p.history.push({score:myScore,words:(mp.myState.foundWords&&mp.myState.foundWords.length)||0,date:new Date().toLocaleDateString('sv-SE'),mp:true,result:draw?'oavgjort':won?'vinst':'förlust'});
-  if(p.history.length>50)p.history=p.history.slice(-50);
-  saveP(p); refreshUI();
-  // VS card
-  var badge=won?'<span class="win-badge">Vinst 🏆</span>':draw?'<span class="draw-badge">Oavgjort 🤝</span>':'<span class="lose-badge">Förlust</span>';
-  var oBadge=(!won&&!draw)?'<span class="win-badge">Vinst 🏆</span>':draw?'<span class="draw-badge">Oavgjort 🤝</span>':'<span class="lose-badge">Förlust</span>';
-  document.getElementById('vs-result').innerHTML='<div class="vs-player '+(won||draw?'vs-winner':'')+'"><div class="vs-avatar" style="background:linear-gradient(135deg,var(--pill),#a78bfa);">😎</div><div class="vs-name">'+myName+'</div><div class="vs-pts">'+myScore+'p</div>'+badge+'</div><div class="vs-sep">VS</div><div class="vs-player '+((!won&&!draw)?'vs-winner':'')+'"><div class="vs-avatar" style="background:linear-gradient(135deg,#0ea5e9,#38bdf8);">🎮</div><div class="vs-name">'+oppName+'</div><div class="vs-pts">'+oppScore+'p</div>'+oBadge+'</div>';
-  // Mini grids
-  document.getElementById('compare-grids').innerHTML='<div class="compare-section"><div class="compare-title">Din bräda</div>'+miniGrid(gs[myKey])+'</div><div class="compare-section"><div class="compare-title">'+oppName+'s bräda</div>'+miniGrid(gs[oppKey])+'</div>';
-  nav('screen-mp-result');
-  // Clean up after 10s
-  setTimeout(function(){ fbDel('games/'+mp.code); },10000);
-  mp.code=null; mp.role=null; mp.myState=null; mp.phase=null;
-}
-
-function miniGrid(data) {
-  if(!data||!data.grid) return '<div style="color:var(--muted);font-size:.75rem;text-align:center;">—</div>';
-  var cm={};
-  (data.linesBest||[]).forEach(function(best,idx){
-    if(!best)return;var dir=idx<5?'rad':'kol';
-    (best.cells||[]).forEach(function(cell){var k=cell.r+'-'+cell.c;if(!cm[k])cm[k]=new Set();cm[k].add(dir);});
   });
-  var html='<div class="mini-grid">';
-  for(var r=0;r<5;r++) for(var c=0;c<5;c++){
-    var dirs=cm[r+'-'+c]; var cls='mini-cell';
-    if(dirs){var row=dirs.has('rad'),col=dirs.has('kol');if(row&&col)cls+=' hi-both';else if(row)cls+=' hi-row';else if(col)cls+=' hi-col';}
-    html+='<div class="'+cls+'">'+(data.grid[r]&&data.grid[r][c]||'')+'</div>';
-  }
-  return html+'</div>';
 }
-
-function leaveMatch() {
+function syncGrid(md){
+  if(!md||!md.grid)return;
+  for(var r=0;r<5;r++)for(var c=0;c<5;c++){var s=(md.grid[r]&&md.grid[r][c])||'';if(s&&!mp.myState.grid[r][c]){var el=document.getElementById('mpcell-'+r+'-'+c);if(el){el.textContent=s;el.classList.add('filled');}mp.myState.grid[r][c]=s;}}
+}
+function showMpResult(gs){
+  var mk=mp.role,ok=mp.role==='host'?'guest':'host';
+  var mySc=(gs[mk]&&gs[mk].score)||0,opSc=(gs[ok]&&gs[ok].score)||0;
+  var myN=(gs[mk]&&gs[mk].name)||'Du',opN=(gs[ok]&&gs[ok].name)||'Motståndare';
+  var won=mySc>opSc,draw=mySc===opSc;
+  var p=loadP();p.mpGames=(p.mpGames||0)+1;if(won)p.mpWins=(p.mpWins||0)+1;
+  p.history=p.history||[];p.history.push({score:mySc,words:(mp.myState.foundWords&&mp.myState.foundWords.length)||0,date:new Date().toLocaleDateString('sv-SE'),mp:true,result:draw?'oavgjort':won?'vinst':'förlust'});
+  if(p.history.length>50)p.history=p.history.slice(-50);saveP(p);refreshUI();
+  var bd=won?'<span class="win-badge">Vinst 🏆</span>':draw?'<span class="draw-badge">Oavgjort 🤝</span>':'<span class="lose-badge">Förlust</span>';
+  var ob=(!won&&!draw)?'<span class="win-badge">Vinst 🏆</span>':draw?'<span class="draw-badge">Oavgjort 🤝</span>':'<span class="lose-badge">Förlust</span>';
+  document.getElementById('vs-result').innerHTML='<div class="vs-player '+(won||draw?'vs-winner':'')+'"><div class="vs-avatar" style="background:linear-gradient(135deg,var(--pill),#a78bfa);">😎</div><div class="vs-name">'+myN+'</div><div class="vs-pts">'+mySc+'p</div>'+bd+'</div><div class="vs-sep">VS</div><div class="vs-player '+((!won&&!draw)?'vs-winner':'')+'"><div class="vs-avatar" style="background:linear-gradient(135deg,#0ea5e9,#38bdf8);">🎮</div><div class="vs-name">'+opN+'</div><div class="vs-pts">'+opSc+'p</div>'+ob+'</div>';
+  document.getElementById('compare-grids').innerHTML='<div class="compare-section"><div class="compare-title">Din bräda</div>'+mG(gs[mk])+'</div><div class="compare-section"><div class="compare-title">'+opN+'s bräda</div>'+mG(gs[ok])+'</div>';
+  nav('screen-mp-result');
+  setTimeout(function(){if(mp.code)fbDel('games/'+mp.code);},10000);
+  mp.code=null;mp.role=null;mp.myState=null;mp.phase=null;
+}
+function mG(data){
+  if(!data||!data.grid)return'<div style="color:var(--muted);font-size:.75rem;text-align:center;">—</div>';
+  var cm={};(data.linesBest||[]).forEach(function(b,idx){if(!b)return;var d=idx<5?'rad':'kol';(b.cells||[]).forEach(function(c){var k=c.r+'-'+c.c;if(!cm[k])cm[k]=new Set();cm[k].add(d);});});
+  var h='<div class="mini-grid">';
+  for(var r=0;r<5;r++)for(var c=0;c<5;c++){var d=cm[r+'-'+c];var cls='mini-cell';if(d){var row=d.has('rad'),col=d.has('kol');if(row&&col)cls+=' hi-both';else if(row)cls+=' hi-row';else if(col)cls+=' hi-col';}h+='<div class="'+cls+'">'+(data.grid[r]&&data.grid[r][c]||'')+'</div>';}
+  return h+'</div>';
+}
+function leaveMatch(){
   if(confirm('Lämna pågående match?')){
-    if(mp.unsubscribe){ mp.unsubscribe(); mp.unsubscribe=null; }
+    if(mp.unsub){mp.unsub();mp.unsub=null;}
     document.getElementById('lp-overlay').style.display='none';
-    if(mp.code) fbSet('games/'+mp.code+'/status','done');
-    mp.code=null; mp.role=null; mp.myState=null; mp.phase=null;
+    if(mp.code)fbSet('games/'+mp.code+'/status','done');
+    mp.code=null;mp.role=null;mp.myState=null;mp.phase=null;
     document.getElementById('create-area').style.display='block';
     document.getElementById('code-area').style.display='none';
     nav('screen-home');
   }
 }
 
-/* ═══════════════════════════════════════════════════════════
-   BOOT
-═══════════════════════════════════════════════════════════ */
+/* ── BOOT — no Firebase dependency ── */
 window.addEventListener('DOMContentLoaded', function() {
   var bar=document.getElementById('loading-bar');
   var msg=document.getElementById('loading-msg');
-  // Load words — no Firebase dependency for boot
-  WORDS.forEach(function(w){ wordSet.add(w.toLowerCase().trim()); });
+  WORDS.forEach(function(w){ WS.add(w.toLowerCase().trim()); });
   bar.style.width='100%';
-  msg.textContent=wordSet.size+' ord inlästa ✓';
-  // Boot immediately — Firebase connects in background when needed
+  msg.textContent=WS.size+' ord ✓';
   setTimeout(function(){
     var l=document.getElementById('loading');
     if(l){l.classList.add('out');setTimeout(function(){if(l.parentNode)l.remove();},450);}
     refreshUI();
     nav('screen-home');
-  }, 500);
+  }, 400);
 });
-
-/* ═══════════════════════════════════════════════════════════
-   WORD LIST
-═══════════════════════════════════════════════════════════ */
-var WORDS=["ab","ad","af","ag","ak","al","am","an","ar","as","at","av","ax","be","bi","bo","by","bå","bä","bö","da","de","di","do","du","dy","då","dö","ed","ej","ek","el","em","en","er","es","et","ex","fa","fe","fi","fo","fu","fy","få","fä","fö","ge","go","gu","gy","gå","gö","ha","he","hi","ho","hu","hy","hå","hä","hö","id","ig","il","im","in","ip","ir","is","it","iv","ja","je","jo","ju","ka","ke","ki","ko","ku","ky","kå","kä","kö","la","le","li","lo","lu","ly","lå","lä","lö","ma","me","mi","mo","mu","my","må","mä","mö","na","ne","ni","no","nu","ny","nå","nä","nö","od","of","og","oh","oj","ok","ol","om","on","op","or","os","ot","ov","ox","pa","pe","pi","po","pu","py","på","pä","pö","ra","re","ri","ro","ru","ry","rå","rä","rö","sa","se","si","so","su","sy","så","sä","sö","ta","te","ti","to","tu","ty","tå","tä","tö","ub","ud","uf","ug","ul","um","un","up","ur","us","ut","uv","va","ve","vi","vo","vy","vå","vä","vö","åk","ål","ån","år","ås","åt","äg","äl","äm","än","är","äs","ät","öd","ög","öl","ön","ör","ös","öt","abb","ack","aga","age","akt","alg","all","alm","alt","alv","amb","amp","and","ane","ans","ant","apa","app","arg","ark","arm","ars","art","ask","att","bad","bag","bak","bal","ban","bar","bas","bat","bax","bed","bel","ben","ber","bet","bev","bid","big","bil","bin","bio","bit","bla","ble","bli","blo","blå","bod","boj","bok","bol","bom","bon","bor","bos","bot","box","bra","bre","bri","bro","bru","bry","brå","bud","bur","bus","byn","bål","bår","bög","bön","böj","bör","dag","dal","dam","dan","dar","dat","del","den","det","dik","din","dip","dis","dit","dju","don","dra","dre","dri","dro","dub","dug","duk","dun","duo","dur","dyn","dår","där","död","eka","eko","eld","elg","ell","elm","elv","emu","eng","ens","era","ers","eta","fam","far","fas","fat","fax","fel","fem","fes","fet","fil","fin","fis","fit","fix","flo","fly","flå","fog","fon","for","fos","fot","fri","fro","fru","fry","frå","ful","fun","fur","fus","fyn","fyr","får","fäl","fär","för","gal","gam","gap","gas","gat","gav","gel","gem","gen","ger","ges","get","gin","gla","gle","gli","glo","god","gon","gor","gos","got","gra","gre","gri","gro","gru","gry","grå","gul","gum","gun","gus","gyl","gym","gål","går","gäl","gär","gör","haj","hal","han","har","has","hat","hav","hej","hel","hem","het","his","hit","hop","hor","hos","hot","hud","hug","hum","hun","hur","hut","huv","hya","hyl","hyr","hys","hyt","hål","hår","häl","häm","hän","här","häx","hög","höj","hön","hör","ion","jag","jak","jav","jet","job","jod","jok","jon","jor","jul","jun","jur","jus","kaj","kak","kal","kam","kan","kap","kar","kas","kat","kav","kep","kil","kin","kit","kli","klo","klå","kod","koj","kok","kol","kom","kon","kop","kor","kos","kot","kry","kub","kul","kum","kun","kup","kur","kut","kyl","kål","kår","käl","kär","kön","köp","kör","lag","lak","lap","lar","las","lat","lax","lek","let","lev","lid","lig","lim","lin","lis","lit","liv","lod","log","lok","lon","lop","lor","los","lot","lug","luk","lum","lun","lur","lus","lut","lya","lyd","lyf","lys","låg","lån","lår","lås","läg","län","lär","läs","lög","lön","lös","mag","mak","mal","man","mar","mas","mat","max","med","meg","mej","mel","men","mer","mes","met","mig","mil","min","mir","mis","mit","mix","mod","mol","mon","mop","mor","mos","mot","mud","mug","mul","mun","mur","mus","myr","mål","mån","mår","mås","mäl","män","mär","mät","möt","nab","nag","nak","nap","nar","nas","nat","nav","nej","nek","net","nip","nit","nob","nod","nog","nom","nor","not","nug","nul","nun","nur","nut","nya","nyd","nyk","nyp","nys","nyt","nål","når","nås","näb","när","näs","nät","nöd","nöj","nöt","oas","obs","ont","ord","orm","ors","ort","oxe","pad","paj","pal","pan","pap","par","pas","pat","pax","pek","pet","pil","pin","pip","pis","pit","pix","poj","pol","pom","pop","por","pot","pox","pra","pro","pub","puk","pul","pum","pur","pus","put","pys","pål","pås","päl","pöl","rad","rak","ram","rap","rar","ras","rat","rav","rea","red","rej","rek","rem","ren","rep","res","ret","rev","rid","rim","rin","rip","ris","rit","riv","rod","rok","rom","ron","rop","ros","rot","rov","rug","rul","rum","run","rus","rut","rya","ryg","ryk","rym","ryp","rys","ryt","råd","råg","råk","rån","rås","råt","räk","rän","räs","rät","räv","rök","rön","rör","rös","sac","saf","sak","sal","sam","sar","sas","sat","sax","sej","sek","sel","sem","sen","ser","set","sex","sid","sig","sim","sin","sir","sis","sit","six","ska","sko","sku","sky","skå","sma","smo","smu","smy","små","sno","sob","sol","som","sop","sor","sos","sot","sov","spa","spy","spå","sta","ste","sti","sto","stu","sty","stå","sub","sug","sul","sum","sun","sur","sut","syd","syn","syr","sys","såg","sål","sås","säd","säk","säl","sän","sät","sök","söl","sön","söt","tab","tak","tal","tam","tan","tap","tar","tas","tat","tav","tax","tek","tel","tem","ten","ter","tes","tid","tig","tim","tin","tip","tis","tit","tjo","tju","tog","tok","ton","top","tor","tos","tot","tra","tre","tri","tro","tru","try","trå","tub","tug","tul","tun","tur","tus","tut","tuv","typ","tyr","tys","tåg","tål","tår","tås","tät","töj","töm","tön","ugg","ugn","ull","ulv","ung","uns","upp","urk","urn","vad","vag","vak","val","van","var","vas","vat","vax","ved","vel","ven","ver","vet","via","vid","vil","vim","vin","vip","vis","vit","viv","yxa","åka","åla","ånga","åra","åsa","åsk","åta","äga","ägg","ägo","äkt","älg","älv","änd","äng","änk","äpp","äre","ärt","äsk","äta","ätt","öde","ödl","öga","öka","öla","önd","öng","önk","öns","öra","öre","örn","öst","öva","bada","bajs","baka","balk","ball","band","bank","bara","bark","barn","basa","bask","bast","bete","biff","bind","biol","bira","birk","bisk","bisp","biss","bita","bitt","blad","blek","blic","blik","blin","blit","blod","blom","blot","bluf","blus","blåa","blyg","blys","blöd","blöt","bock","boja","bola","bold","boll","bolt","bond","bone","bord","bore","born","bort","bota","bott","brak","brev","brig","bris","brod","bron","brun","brus","bryd","bryg","bryt","bräd","bröd","bubb","bugg","buka","bull","bult","bunt","bura","burk","burr","buse","bygg","bygd","bytt","bård","bäck","bädd","bäst","böja","böjd","bölj","böna","börd","dala","dams","dans","darr","dask","data","dela","dill","dina","ding","dino","diod","disk","diss","ditt","djup","djur","dock","doft","dold","dolk","dome","dopp","dosa","dott","drag","drak","dram","drev","driv","drog","drop","drum","drög","dröj","dröm","dröp","dubb","dugg","dumb","dump","dunk","duva","dyka","dykt","dämt","döda","dörr","döva","ebbe","eget","egna","ekan","ekar","ekip","ekon","elva","enig","enot","ense","epok","epos","eras","evig","exil","expo","fack","falk","fall","falm","fana","fann","fans","fant","fara","fare","farm","fart","fasa","fast","fatt","fejd","fejk","fela","fend","fena","ferd","fesk","fest","fett","fika","fike","fila","fill","filt","fina","fink","finn","fint","fisk","fist","fjol","fjun","flag","flak","flat","flic","flik","flin","flip","flis","flit","flod","flok","flom","flop","flor","flot","flug","flyd","flyg","flyt","fläk","fläm","flöd","flöj","flöt","folk","fond","form","fors","fort","foss","fota","frak","fred","fren","frid","frih","frim","fris","frit","frod","fron","fros","frug","frum","frun","frus","fryg","frys","fråg","fräk","främ","fräs","fröj","frön","fukt","fult","fund","furr","fusk","fyra","fyll","fäll","färd","färg","färj","fäst","föda","förr","förs","fösa","gadd","gala","gall","galt","gang","gard","garn","garv","gasa","gate","gave","gavl","gena","gens","gest","gick","gips","glad","gled","gles","glet","glid","glim","glob","glor","glot","glöd","glöm","gnag","gott","gram","grap","grav","grep","grev","gril","grim","grin","grip","gris","grov","grub","grus","gryl","grym","gryn","grys","gryt","grän","gräs","gräv","gröd","grön","grös","gubb","guld","gult","gump","gung","gurk","gäck","gädd","gärn","gäss","gäst","göra","hack","haka","hake","hala","halk","hall","halm","hals","halt","hamm","hane","hans","hara","harm","harv","hasa","hash","hask","hasp","hass","hast","hatt","have","havs","hela","helg","hell","helm","help","hems","herd","heta","hets","hett","himl","hinn","hint","hiss","hjul","hold","holk","holm","hona","hora","hord","horn","hors","hort","host","hota","hots","hulk","hull","humm","hump","hund","hung","hunk","hunt","hura","hurr","husa","husk","hutt","hyfs","hyll","hyra","hyrs","hyst","hytt","häls","hämt","häng","hänt","härd","härl","härm","härs","häst","höft","högg","högs","höja","höjd","höna","höra","hörn","hörs","hört","höst","ikon","inga","inka","inna","inne","inre","jaga","jake","jakt","java","jazz","jord","jour","jude","jula","jump","jung","jura","jury","just","jämt","järn","jäsa","jäst","kack","kale","kalk","kall","kalv","kamp","kapa","kare","karg","karl","karm","karv","kasa","kase","kash","kask","kass","kast","kate","kava","kika","kilt","kind","kink","kinn","kipa","kjol","klad","klam","klap","klar","klas","klat","klav","klen","klin","klis","klit","kliv","klok","klor","klot","klur","klut","klyk","klåd","kläd","kläm","klär","klöv","knak","knap","knar","knas","knik","knil","knip","knis","knob","knod","knog","knol","knop","knor","knot","knug","knul","knut","knyp","knål","knäp","knät","knöl","koja","koka","kola","koll","korn","kors","kort","korv","koss","kost","krab","kram","krav","kred","krig","krim","kris","krit","krog","krok","krom","kron","kros","krug","krul","krum","krun","krut","kryl","krym","kryn","kryp","krys","kräk","kräm","kröp","kudd","kugg","kula","kull","kult","kund","kung","kupa","kupe","kura","kurs","kust","kyla","kyll","kylt","kyrk","käft","käll","käng","kärl","kärt","köld","köpt","körn","körs","kört","körv","labb","ladd","lage","lagg","laka","lama","lamb","lamp","lank","lant","lask","lass","last","leda","lede","ledk","ledn","leka","leke","lena","lerk","lerm","lerv","leta","levy","lexa","lexi","lida","lidd","lidg","lidk","lidm","lidn","lidr","lids","likt","lila","lill","lima","lime","limm","limp","lina","lind","linj","link","linn","lins","lipa","lirk","lisp","liss","list","lita","lite","liva","live","livs","livt","ljud","ljug","ljum","ljus","ljut","lock","loge","logg","logo","loja","lopp","lord","lurk","lurs","lurt","lust","lutt","lyda","lyft","lykt","lymf","lysa","lyse","lysk","lyss","lyst","lytt","lång","låst","låta","lägg","lägst","läkt","lämp","läng","länk","läns","lärd","läsa","läse","läsk","läsp","läst","läxa","löda","löke","lönn","löpa","löps","lösa","löse","lösk","löst","mack","majs","make","makt","mala","malm","malt","mama","mana","mane","mang","mark","marl","mars","mart","mask","mass","mast","mata","mate","matt","mega","melo","mena","merd","mera","mesa","mesh","mess","mest","meta","mild","milk","mill","minn","miss","mitt","mjöl","moda","mode","mole","moln","mora","mord","mors","mort","mosa","moss","most","mota","mugg","mumm","mums","murm","murt","musk","muta","mutt","myrk","myst","målm","måls","målt","månl","måns","märkt","mäst","mäta","mäts","mätt","möts","mött","nack","nagg","nake","nark","narl","narm","narr","nart","nast","natt","neka","nick","niga","nirk","nirm","nirn","nirr","nisk","nitr","nitt","njur","njut","nobs","nock","noda","noga","norm","norn","norr","nors","nort","nosk","null","nymf","nyss","nyst","nytt","nåla","näbb","nämnd","näsa","näsk","näst","nätt","nöjd","odla","padd","palm","pann","pans","pant","papp","park","pars","part","past","patt","peka","pena","pend","peng","penn","pest","pila","pilk","pill","piln","pils","pilt","pina","pine","pink","pinn","pirk","pirl","pirn","pirr","pisk","piss","pist","plak","plan","plas","plat","plik","plim","plin","plis","plit","plod","plog","plok","plom","plop","plot","plov","plug","plum","plus","plut","plym","plåg","plåt","pläg","plöj","pock","pojk","polk","pols","polt","polv","pomp","pond","pong","popp","pork","porn","porr","pors","port","porv","post","pott","prik","prim","pris","prob","prop","prot","prov","pryd","pryl","pryt","prål","prän","pröv","publ","pugg","pulk","puls","pult","pulv","pump","pund","pung","punk","punt","purk","purr","pusk","puss","pust","pytt","påla","påle","påsk","påst","pärm","pärn","pärr","pärt","radd","rage","ragg","rake","rakt","rall","ramp","rand","rank","rann","raps","rark","rarl","rarr","rars","rart","rask","rasp","rast","rave","reck","regn","rela","rele","relg","relk","relm","reln","rels","relt","rely","rena","rend","reng","renk","renn","resa","rese","resk","resm","ress","rest","reta","rete","retm","retn","rets","rett","reva","reve","revg","revk","revm","revn","revr","revs","revt","revy","rida","ridb","ridd","ridg","ridk","ridm","ridn","ridr","rids","ridt","riff","rika","rike","rikt","rile","rilk","rilm","riln","rilr","rils","rilt","rima","rimm","risk","rism","risn","risp","rist","rivb","rivc","rivd","rivg","rivk","rivm","rivn","rivp","rivr","rivs","rivt","robb","rock","roff","rokk","rokm","rolm","rona","ropp","rorm","rorr","ross","rost","rots","rova","rovg","rovk","rovm","rovn","rovr","rovs","rudd","rugg","rulk","rulm","runn","rusc","rusk","russ","rust","rutt","ryck","rygg","rykt","rymm","rymn","ryms","rymt","rynk","rypa","rypt","rysk","ryss","ryta","ryts","rytt","rådd","råka","råna","räck","rädd","räkn","rämna","ränn","rätt","röda","röja","röjd","röka","rönj","rörm","rörn","rörr","rörs","rört","röst","röta","röts","rött","sack","saga","saka","sakt","sala","salg","salk","sall","salm","salt","salv","sams","sand","sang","sank","sann","sans","sarl","sarm","sarn","sarr","sars","sart","sarv","sask","sass","satt","sela","sele","self","selg","selk","selm","seln","sels","selt","seml","senl","senm","senn","senr","serg","serk","serm","sern","serr","sers","serv","sidg","sidk","sidm","sidn","sidr","sids","sidt","siga","sigk","sigl","sign","sigr","sila","silk","sill","silm","siln","silv","simb","simm","simn","sina","sine","sink","sinn","sirk","sirl","sirn","sirr","sirt","sisk","sisp","siss","sist","siva","sivk","sivm","sjud","sjuk","sjun","sjut","sjön","skabb","skada","skadd","skak","skal","skall","skalp","skam","skan","skap","skar","skat","skav","sken","sker","sket","skid","skil","skim","skip","skis","skiv","skog","skon","skor","skot","skov","skrak","skred","skriv","skrot","skrub","skrut","skrå","skrän","skull","skulp","skur","skuta","skylt","skåd","skåla","skård","skärm","skärn","skärr","skärs","skärt","slabb","slad","slak","slam","slant","slap","slar","slas","slat","slav","slem","slid","slim","slip","slit","sliv","slod","slog","slok","slon","slop","slot","slov","slug","slut","slåss","släck","släpp","slösa","slött","smak","smal","smet","smid","smit","smog","smuts","smält","snack","snapp","snara","snick","snill","snobb","snora","snorr","snubb","snusk","snäll","sodd","soffa","solo","somm","sona","sort","sorv","sova","spak","span","spar","spat","spec","sped","spel","spin","spis","spjut","spola","sprak","spröd","spår","spänn","spärr","spöka","stad","stam","stan","star","stat","stav","stem","step","sten","steg","stil","stim","stod","stoj","stok","stom","ston","stor","stud","stuk","stum","stun","styk","styr","stål","stän","stäng","stärk","stöt","stöv","sudd","summ","sund","sunt","surr","svag","svaj","sval","svam","svans","svar","sven","svet","svid","svik","svim","svin","svit","sylt","syng","syns","synt","syra","syss","såga","sågs","sågt","såll","säck","sägs","sälj","säljs","sält","sända","sänk","sätt","söka","sömn","söts","tack","tags","tala","talg","tall","talm","taln","talp","talr","tals","talt","talv","tama","tand","tank","tann","tant","tark","tarl","tarm","tarn","tarv","task","tass","tatt","teck","tela","tenn","term","tern","test","tick","tiga","timm","tink","tins","tirk","tirs","tiss","tist","titt","tjat","tjog","tjur","tjut","tock","toga","tolv","tona","tork","torn","torr","tors","torv","toss","trad","trak","tram","tran","trap","trar","tras","trat","trav","tred","tref","tren","tret","trev","trib","trig","trim","trin","trip","tris","trit","triv","trob","trod","trog","trol","tron","tror","tros","trot","trov","trug","trum","trus","trut","tryc","tryd","tryg","tryl","tryn","tryp","trys","tryt","tråd","tråk","träd","träff","träng","träsk","trött","tuba","tubb","tugg","tuja","tule","tung","tunk","tunn","tunt","turk","turn","turr","turs","tusk","tuss","tust","tutt","tyck","tyng","tysk","tyst","tåga","tåla","tålm","tåln","tålr","tåls","tålt","täck","tälja","tälj","tält","tände","tänd","täng","tänk","tänt","tätt","töja","töjd","töjn","töjr","töjt","tömma","töms","tömt","uggl","ugns","ulna","ulva","unge","uppe","uppf","uppg","upph","uppk","uppl","uppm","uppn","uppr","upps","uppt","uppv","urna","vala","vale","valk","vall","valm","valn","valp","valr","vals","valt","valv","vana","vane","vang","vann","vant","vara","vard","vare","varg","vark","varl","varm","varn","vars","vart","varv","vase","vask","vass","vata","vate","vaxa","vedh","vedk","vedm","vedn","vedr","veds","vedt","vedv","veka","veke","vekl","venk","venm","venn","vera","verd","verk","verl","verm","vern","verr","vers","vert","verv","veta","vete","vibb","vidd","vidf","vidg","vidk","vidl","vidm","vidn","vidp","vidr","vids","vidt","vidv","viga","vigk","vigl","vign","vigr","vika","vike","vikk","vikm","vikr","viks","vikt","vild","vilg","vill","vilm","viln","vilp","vilr","vils","vilt","vilv","vimk","viml","vimm","vina","vine","ving","vink","vinn","vins","vint","vira","vire","virk","virl","virm","virn","virr","virs","virt","virv","visa","vise","visk","visn","visp","visr","viss","vist","vita","vite","vitk","vitl","vitm","vitn","vitp","vitr","vits","vitt","vrak","vred","vrid","yoga","yogi","ytan","åkad","åken","åker","åket","ålag","ålat","ålen","åler","ålet","ånga","årab","årad","åren","åres","året","åror","åtag","åtar","åtas","åtat","åter","äckt","äkta","äkte","älga","älgm","älgn","älgr","älgs","älgt","älgv","älska","änge","ängk","ängl","ängm","ängn","ängr","ängs","ängt","änka","änke","äppl","ärft","ärtk","ärtm","ärtn","ärtr","ärts","ärtt","ärva","ärve","äska","äske","ätit","ätta","ättk","ättl","ättm","ättn","ättr","ätts","ättt","ävek","ävem","även","äver","äves","ävet","ödla","ögon","ökat","ökas","ölsk","ömma","ömme","örna","örne","örns","örtt","örtv","östk","östm","östn","östr","östs","östt","östv","övad","övan","övar","övas","övat","öven","över","öves","övet","övig","övre","övar","övas","ögna","örat","ören","örna","öron","afton","alarm","aldrig","allas","allra","alster","altan","anbud","andra","anfall","anlag","anmäl","annan","antag","använda","appar","armod","artig","arton","avkok","avlat","avlys","avlöp","avrad","avtal","avund","avväg","backe","bagge","bakom","balja","banka","banna","batta","berga","beskt","beska","betus","bibel","bitsk","bjälk","bjuda","bjärt","bläck","blöja","bocka","bojor","bolma","bomba","bonde","borga","borst","borts","borta","botna","brant","brasa","breda","brosk","brott","brusa","bråte","bränd","bröst","bubba","bulla","bylte","bästa","böcka","bödel","börda","bössa","datum","debut","dekal","delta","depot","derby","diket","dikte","djäkn","djärv","dolke","domna","dorra","draga","drags","drana","drapp","drägg","dräkt","dröna","dugga","dunga","dunka","dunst","dusch","dvärg","dynga","dälig","dämpa","dödad","dödas","dölja","dörra","dövas","eldar","eldig","elfta","engel","erkän","etapp","evigt","extra","fakta","falla","falsk","farsa","farst","fatsa","femte","fenix","fetta","filea","filma","finne","fiska","fjord","fjäde","fjärr","fjäsk","flabb","flata","flena","flick","flimr","flopp","flott","fluga","flykt","följe","flärd","fläsk","flöte","fokus","folke","forna","forsk","frack","franc","frass","frist","fross","frust","fräls","frälst","fröjd","fröna","fulle","galet","gator","genug","gille","gjord","gjuta","gläds","glögg","glöms","godta","gorma","gosse","grabb","grade","grape","grave","greja","grepp","greve","grima","grins","gripa","groda","grogg","groms","gruta","gruve","grymt","gränd","gröna","gröpe","gubbe","gulna","gutar","gutan","gälla","göken","göten","halka","halta","hamna","hanna","harpa","harta","hedra","hemsk","hitta","hobby","hopar","horsa","horse","horta","hotad","hosta","hugga","hyvla","hänge","hänga","hänvi","häpna","härda","härnä","hörna","inbud","indra","inneh","insyn","intag","intet","invid","irisk","kaffe","karta","kassa","klass","klimat","knyta","kontakt","kosta","kraftig","kräva","lista","logik","lycklig","löpning","maskin","media","metall","miljon","mineral","missa","moderna","myndighet","målning","möjlig","navigera","neutral","noga","notis","nyckel","närvaro","nödvändig","ocean","okej","orka","planera","poäng","positiv","privat","problem","produkt","projekt","protest","reglera","respekt","resultat","röka","samhälle","satsa","sektion","seriös","sikta","skapa","skilja","skriva","snabb","springa","starta","stjärna","strategi","styrka","svara","symbol","system","säkert","söker","talang","teknik","tendens","teori","tillämpa","trogen","tvinga","unika","uppföra","uppskatta","utbilda","utforska","utmana","uttrycka","värdera","välja","världen","växa","ytlig","ytterst","kafé","choklad","bulle","bakad","smör","socker","mjölk","äpple","päron","hallon","kakan","tårta","bakare","brödet","bröden","bredvid","bordet","fönster","golvet","taket","väggen","dörren","stolen","soffan","lampan","koppen","glaset","tallrik","gaffeln","kniven","skeden","steken","gryta","soppan","sallad","vitlök","tomaten","gurkan","rödbeta","moroten","fisken","räkorna","ostarna","smörjan","grädden","yoghurt","kefiren","saften","juicen","vattnet","teet","vinet","spriten","likören","latte","cappuccino","espresso","macchiato"];
+</script>
+<script>
+var WORDS=["ab","ad","af","ag","ak","al","am","an","ar","as","at","av","ax","be","bi","bo","by","bå","bä","bö","da","de","di","do","du","dy","då","dö","ed","ej","ek","el","em","en","er","es","et","ex","fa","fe","fi","fo","fu","fy","få","fä","fö","ge","go","gu","gy","gå","gö","ha","he","hi","ho","hu","hy","hå","hä","hö","id","ig","il","im","in","ip","ir","is","it","iv","ja","je","jo","ju","ka","ke","ki","ko","ku","ky","kå","kä","kö","la","le","li","lo","lu","ly","lå","lä","lö","ma","me","mi","mo","mu","my","må","mä","mö","na","ne","ni","no","nu","ny","nå","nä","nö","od","of","og","oh","oj","ok","ol","om","on","op","or","os","ot","ov","ox","pa","pe","pi","po","pu","py","på","pä","pö","ra","re","ri","ro","ru","ry","rå","rä","rö","sa","se","si","so","su","sy","så","sä","sö","ta","te","ti","to","tu","ty","tå","tä","tö","ub","ud","uf","ug","ul","um","un","up","ur","us","ut","uv","va","ve","vi","vo","vy","vå","vä","vö","åk","ål","ån","år","ås","åt","äg","äl","äm","än","är","äs","ät","öd","ög","öl","ön","ör","ös","öt","abb","ack","aga","age","akt","alg","all","alm","alt","alv","amb","amp","and","ane","ans","ant","apa","app","arg","ark","arm","ars","art","ask","att","bad","bag","bak","bal","ban","bar","bas","bat","bax","bed","bel","ben","ber","bet","bev","bid","big","bil","bin","bio","bit","bla","ble","bli","blo","blå","bod","boj","bok","bol","bom","bon","bor","bos","bot","box","bra","bre","bri","bro","bru","bry","brå","bud","bur","bus","byn","bål","bår","bög","bön","böj","bör","dag","dal","dam","dan","dar","dat","del","den","det","dik","din","dip","dis","dit","dju","don","dra","dre","dri","dro","dub","dug","duk","dun","duo","dur","dyn","dår","där","död","eka","eko","eld","elg","ell","elm","elv","emu","eng","ens","era","ers","eta","fam","far","fas","fat","fax","fel","fem","fes","fet","fil","fin","fis","fit","fix","flo","fly","flå","fog","fon","for","fos","fot","fri","fro","fru","fry","frå","ful","fun","fur","fus","fyn","fyr","får","fäl","fär","för","gal","gam","gap","gas","gat","gav","gel","gem","gen","ger","ges","get","gin","gla","gle","gli","glo","god","gon","gor","gos","got","gra","gre","gri","gro","gru","gry","grå","gul","gum","gun","gus","gyl","gym","gål","går","gäl","gär","gör","haj","hal","han","har","has","hat","hav","hej","hel","hem","het","his","hit","hop","hor","hos","hot","hud","hug","hum","hun","hur","hut","huv","hya","hyl","hyr","hys","hyt","hål","hår","häl","häm","hän","här","häx","hög","höj","hön","hör","ion","jag","jak","jav","jet","job","jod","jok","jon","jor","jul","jun","jur","jus","kaj","kak","kal","kam","kan","kap","kar","kas","kat","kav","kep","kil","kin","kit","kli","klo","klå","kod","koj","kok","kol","kom","kon","kop","kor","kos","kot","kry","kub","kul","kum","kun","kup","kur","kut","kyl","kål","kår","käl","kär","kön","köp","kör","lag","lak","lap","lar","las","lat","lax","lek","let","lev","lid","lig","lim","lin","lis","lit","liv","lod","log","lok","lon","lop","lor","los","lot","lug","luk","lum","lun","lur","lus","lut","lya","lyd","lyf","lys","låg","lån","lår","lås","läg","län","lär","läs","lög","lön","lös","mag","mak","mal","man","mar","mas","mat","max","med","meg","mej","mel","men","mer","mes","met","mig","mil","min","mir","mis","mit","mix","mod","mol","mon","mop","mor","mos","mot","mud","mug","mul","mun","mur","mus","myr","mål","mån","mår","mås","mäl","män","mär","mät","möt","nab","nag","nak","nap","nar","nas","nat","nav","nej","nek","net","nip","nit","nob","nod","nog","nom","nor","not","nug","nul","nun","nur","nut","nya","nyd","nyk","nyp","nys","nyt","nål","når","nås","näb","när","näs","nät","nöd","nöj","nöt","oas","obs","ont","ord","orm","ors","ort","oxe","pad","paj","pal","pan","pap","par","pas","pat","pax","pek","pet","pil","pin","pip","pis","pit","pix","poj","pol","pom","pop","por","pot","pox","pra","pro","pub","puk","pul","pum","pur","pus","put","pys","pål","pås","päl","pöl","rad","rak","ram","rap","rar","ras","rat","rav","rea","red","rej","rek","rem","ren","rep","res","ret","rev","rid","rim","rin","rip","ris","rit","riv","rod","rok","rom","ron","rop","ros","rot","rov","rug","rul","rum","run","rus","rut","rya","ryg","ryk","rym","ryp","rys","ryt","råd","råg","råk","rån","rås","råt","räk","rän","räs","rät","räv","rök","rön","rör","rös","sac","saf","sak","sal","sam","sar","sas","sat","sax","sej","sek","sel","sem","sen","ser","set","sex","sid","sig","sim","sin","sir","sis","sit","six","ska","sko","sku","sky","skå","sma","smo","smu","smy","små","sno","sob","sol","som","sop","sor","sos","sot","sov","spa","spy","spå","sta","ste","sti","sto","stu","sty","stå","sub","sug","sul","sum","sun","sur","sut","syd","syn","syr","sys","såg","sål","sås","säd","säk","säl","sän","sät","sök","söl","sön","söt","tab","tak","tal","tam","tan","tap","tar","tas","tat","tav","tax","tek","tel","tem","ten","ter","tes","tid","tig","tim","tin","tip","tis","tit","tjo","tju","tog","tok","ton","top","tor","tos","tot","tra","tre","tri","tro","tru","try","trå","tub","tug","tul","tun","tur","tus","tut","tuv","typ","tyr","tys","tåg","tål","tår","tås","tät","töj","töm","tön","ugg","ugn","ull","ulv","ung","uns","upp","urk","urn","vad","vag","vak","val","van","var","vas","vat","vax","ved","vel","ven","ver","vet","via","vid","vil","vim","vin","vip","vis","vit","viv","yxa","åka","åla","ånga","åra","åsa","åsk","åta","äga","ägg","ägo","äkt","älg","älv","änd","äng","änk","äpp","äre","ärt","äsk","äta","ätt","öde","ödl","öga","öka","öla","önd","öng","önk","öns","öra","öre","örn","öst","öva","bada","bajs","baka","balk","ball","band","bank","bara","bark","barn","basa","bask","bast","bete","biff","bind","biol","bira","birk","bisk","bisp","biss","bita","bitt","blad","blek","blic","blik","blin","blit","blod","blom","blot","bluf","blus","blåa","blyg","blys","blöd","blöt","bock","boja","bola","bold","boll","bolt","bond","bone","bord","bore","born","bort","bota","bott","brak","brev","brig","bris","brod","bron","brun","brus","bryd","bryg","bryt","bräd","bröd","bubb","bugg","buka","bull","bult","bunt","bura","burk","burr","buse","bygg","bygd","bytt","bård","bäck","bädd","bäst","böja","böjd","bölj","böna","börd","dala","dams","dans","darr","dask","data","dela","dill","dina","ding","dino","diod","disk","diss","ditt","djup","djur","dock","doft","dold","dolk","dome","dopp","dosa","dott","drag","drak","dram","drev","driv","drog","drop","drum","drög","dröj","dröm","dröp","dubb","dugg","dumb","dump","dunk","duva","dyka","dykt","dämt","döda","dörr","döva","ebbe","eget","egna","ekan","ekar","ekip","ekon","elva","enig","enot","ense","epok","epos","eras","evig","exil","expo","fack","falk","fall","falm","fana","fann","fans","fant","fara","fare","farm","fart","fasa","fast","fatt","fejd","fejk","fela","fend","fena","ferd","fesk","fest","fett","fika","fike","fila","fill","filt","fina","fink","finn","fint","fisk","fist","fjol","fjun","flag","flak","flat","flic","flik","flin","flip","flis","flit","flod","flok","flom","flop","flor","flot","flug","flyd","flyg","flyt","fläk","fläm","flöd","flöj","flöt","folk","fond","form","fors","fort","foss","fota","frak","fred","fren","frid","frih","frim","fris","frit","frod","fron","fros","frug","frum","frun","frus","fryg","frys","fråg","fräk","främ","fräs","fröj","frön","fukt","fult","fund","furr","fusk","fyra","fyll","fäll","färd","färg","färj","fäst","föda","förr","förs","fösa","gadd","gala","gall","galt","gang","gard","garn","garv","gasa","gate","gave","gavl","gena","gens","gest","gick","gips","glad","gled","gles","glet","glid","glim","glob","glor","glot","glöd","glöm","gnag","gott","gram","grap","grav","grep","grev","gril","grim","grin","grip","gris","grov","grub","grus","gryl","grym","gryn","grys","gryt","grän","gräs","gräv","gröd","grön","grös","gubb","guld","gult","gump","gung","gurk","gäck","gädd","gärn","gäss","gäst","göra","hack","haka","hake","hala","halk","hall","halm","hals","halt","hamm","hane","hans","hara","harm","harv","hasa","hash","hask","hasp","hass","hast","hatt","have","havs","hela","helg","hell","helm","help","hems","herd","heta","hets","hett","himl","hinn","hint","hiss","hjul","hold","holk","holm","hona","hora","hord","horn","hors","hort","host","hota","hots","hulk","hull","humm","hump","hund","hung","hunk","hunt","hura","hurr","husa","husk","hutt","hyfs","hyll","hyra","hyrs","hyst","hytt","häls","hämt","häng","hänt","härd","härl","härm","härs","häst","höft","högg","högs","höja","höjd","höna","höra","hörn","hörs","hört","höst","ikon","inga","inka","inna","inne","inre","jaga","jake","jakt","java","jazz","jord","jour","jude","jula","jump","jung","jura","jury","just","jämt","järn","jäsa","jäst","kack","kale","kalk","kall","kalv","kamp","kapa","kare","karg","karl","karm","karv","kasa","kase","kash","kask","kass","kast","kate","kava","kika","kilt","kind","kink","kinn","kipa","kjol","klad","klam","klap","klar","klas","klat","klav","klen","klin","klis","klit","kliv","klok","klor","klot","klur","klut","klyk","klåd","kläd","kläm","klär","klöv","knak","knap","knar","knas","knik","knil","knip","knis","knob","knod","knog","knol","knop","knor","knot","knug","knul","knut","knyp","knål","knäp","knät","knöl","koja","koka","kola","koll","korn","kors","kort","korv","koss","kost","krab","kram","krav","kred","krig","krim","kris","krit","krog","krok","krom","kron","kros","krug","krul","krum","krun","krut","kryl","krym","kryn","kryp","krys","kräk","kräm","kröp","kudd","kugg","kula","kull","kult","kund","kung","kupa","kupe","kura","kurs","kust","kyla","kyll","kylt","kyrk","käft","käll","käng","kärl","kärt","köld","köpt","körn","körs","kört","körv","labb","ladd","lage","lagg","laka","lama","lamb","lamp","lank","lant","lask","lass","last","leda","lede","leka","leke","lena","leta","likt","lila","lill","lima","lime","lina","lind","link","lins","list","lita","lite","liva","live","ljud","ljug","ljum","ljus","ljut","lock","loge","logg","logo","loja","lopp","lord","lurk","lust","lyda","lyft","lykt","lysa","lyst","lång","låst","låta","lägg","läng","länk","lärd","läsa","läsk","läst","läxa","lönn","löpa","lösa","löst","mack","majs","make","makt","mala","malm","malt","mama","mana","mark","mars","mask","mass","mast","mata","mate","matt","mega","mena","mera","mess","mest","meta","mild","milk","mill","miss","mitt","mjöl","moda","mode","moln","mora","mord","mors","moss","most","mota","mugg","musk","muta","myst","mäta","mätt","nack","nagg","nark","narr","natt","neka","nick","njur","njut","noga","norm","norr","null","nyss","nytt","nåla","näsa","näst","nätt","nöjd","odla","palm","pann","pant","papp","park","part","past","peka","peng","penn","pest","pila","pill","pina","pink","pinn","pisk","plan","plug","plus","pock","pojk","pomp","pong","popp","pork","porr","port","post","prik","prim","pris","prob","prop","prov","pryl","pump","pund","pung","punk","puss","påla","påsk","radd","rake","rakt","ramp","rand","rank","raps","rask","rasp","rast","regn","rena","resa","rest","reta","reva","revy","rida","riff","rika","rike","rikt","rima","risk","robb","rock","ross","rost","rugg","runn","rusk","russ","rust","rutt","ryck","rygg","rykt","rymm","rynk","rysk","ryss","ryta","råka","råna","räck","rädd","rätt","röda","röja","röka","röst","röta","rött","sack","saga","sakt","sala","salt","sams","sand","sank","sann","sans","satt","silk","sill","simm","sink","sist","sjud","sjuk","sjun","sjut","skak","skal","skam","skap","skar","skat","skav","sken","skid","skil","skip","skis","skiv","skog","skon","skor","skot","skull","skur","skylt","slad","slak","slam","slap","slas","slav","slem","slim","slip","slit","slog","slop","slot","slug","slut","smak","smal","smet","smid","smit","snack","snara","snick","snill","snobb","snora","snorr","snäll","sodd","soffa","solo","sona","sort","sova","spak","span","spar","spel","spin","spis","spår","stad","stam","stan","star","stat","stav","sten","steg","stil","stim","stod","stok","stom","ston","stor","stum","styr","stål","stäng","stöt","sudd","sund","surr","svag","sval","svam","svar","sven","svet","svid","svik","svin","svit","sylt","syra","såga","såll","säck","sälj","sänk","sätt","söka","sömn","tack","tala","talg","tall","tama","tand","tank","tant","tarm","task","tass","teck","tenn","term","test","tick","tiga","timm","tink","tiss","titt","tjat","tjur","tjut","toga","tolv","tona","tork","torn","torr","torv","tram","tran","trap","tras","trav","trev","trim","trin","trip","tron","tror","tros","trot","trum","tryg","tyst","tåla","täck","tält","tänd","tänk","tätt","töja","tömma","unge","urna","vall","valp","vals","valv","vana","varm","varn","vars","vart","varv","vask","vass","verk","vers","veta","vete","vidd","vika","vike","vikt","vild","vill","vina","vine","ving","vink","vinn","vint","vira","vire","virr","visa","vise","visk","visp","viss","vist","vita","vite","vits","vitt","vrak","vred","vrid","yoga","yogi","ånga","åren","åter","äkta","älska","änka","äppl","ärva","äska","ätit","ätta","även","ödla","ögon","ölsk","ömma","örna","öron","afton","alarm","andra","annan","avtal","backe","bagge","bakom","banka","bonde","borta","brant","brasa","breda","brosk","brott","brusa","bubba","bulla","bästa","börda","datum","debut","delta","depot","djärv","draga","dunga","dunka","dunst","dusch","eldar","engel","etapp","evigt","extra","fakta","falla","falsk","farsa","femte","fetta","filma","finne","fiska","fjord","flabb","flata","flena","flick","flopp","flott","fluga","flykt","fokus","forna","frack","frass","frist","fross","frust","fräls","galet","gator","gille","gjord","gjuta","glögg","godta","gosse","grabb","grape","grave","greja","grepp","greve","grima","grins","gripa","groda","grogg","gruta","grymt","gränd","gröna","gubbe","gulna","gälla","halka","halta","hamna","harpa","hedra","hemsk","hitta","hobby","horsa","hotad","hosta","hugga","hyvla","hänga","hörna","irisk","kaffe","karta","kassa","klass","knyta","kosta","kräva","lista","logik","maskin","media","metall","miljon","missa","moderna","målning","möjlig","neutral","nyckel","närvaro","ocean","okej","orka","planera","poäng","positiv","privat","problem","produkt","projekt","protest","reglera","respekt","resultat","röka","samhälle","satsa","sektion","sikta","skapa","skilja","skriva","snabb","springa","starta","stjärna","strategi","styrka","svara","symbol","system","säkert","söker","talang","teknik","teori","tillämpa","trogen","tvinga","unika","uppföra","utbilda","utforska","utmana","uttrycka","värdera","välja","världen","växa","ytlig","kafé","choklad","bulle","bakad","smör","socker","mjölk","äpple","päron","hallon","kakan","tårta","bakare","brödet","bröden","bredvid","bordet","fönster","golvet","taket","väggen","dörren","stolen","soffan","lampan","koppen","glaset","tallrik","gaffeln","kniven","skeden","steken","gryta","soppan","sallad","vitlök","tomaten","gurkan","rödbeta","moroten","fisken","räkorna","ostarna","smörjan","grädden","yoghurt","kefiren","saften","juicen","vattnet","teet","vinet","spriten","likören","latte","cappuccino","espresso","macchiato"];
+</script>
+</body>
+</html>
