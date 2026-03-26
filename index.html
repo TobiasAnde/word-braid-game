@@ -991,41 +991,17 @@ function leaveMatch() {
 window.addEventListener('DOMContentLoaded', function() {
   var bar=document.getElementById('loading-bar');
   var msg=document.getElementById('loading-msg');
-  bar.style.width='30%';
+  // Load words — no Firebase dependency for boot
   WORDS.forEach(function(w){ wordSet.add(w.toLowerCase().trim()); });
-  bar.style.width='70%';
-  msg.textContent='Testar Firebase-anslutning…';
-  // Test Firebase connection
-  // Add timeout in case Firebase hangs
-var fbTimeout = setTimeout(function(){
+  bar.style.width='100%';
+  msg.textContent=wordSet.size+' ord inlästa ✓';
+  // Boot immediately — Firebase connects in background when needed
+  setTimeout(function(){
     var l=document.getElementById('loading');
-    if(l&&!l.classList.contains('out')){
-      l.classList.add('out');setTimeout(function(){if(l.parentNode)l.remove();},450);
-      refreshHomeStats();nav('screen-home');
-    }
-  }, 4000);
-  fbGet('.info/connected').then(function(){
-    clearTimeout(fbTimeout);
-    bar.style.width='100%';
-    msg.textContent=wordSet.size+' ord klara ✓';
-    setTimeout(function(){
-      var l=document.getElementById('loading');
-      l.classList.add('out');
-      setTimeout(function(){ l.remove(); },450);
-      refreshUI();
-      nav('screen-home');
-    }, 400);
-  }).catch(function(err){
-    bar.style.width='100%';
-    msg.textContent='⚠️ Firebase-fel: '+err.message;
-    // Still load the app — solo play works without Firebase
-    setTimeout(function(){
-      var l=document.getElementById('loading');
-      l.classList.add('out');
-      setTimeout(function(){ l.remove(); },450);
-      refreshUI(); nav('screen-home');
-    }, 2000);
-  });
+    if(l){l.classList.add('out');setTimeout(function(){if(l.parentNode)l.remove();},450);}
+    refreshUI();
+    nav('screen-home');
+  }, 500);
 });
 
 /* ═══════════════════════════════════════════════════════════
