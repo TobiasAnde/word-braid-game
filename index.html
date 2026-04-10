@@ -464,15 +464,21 @@ function calcSc(state){
   for(var c=0;c<5;c++){var col=state.grid.map(function(row){return row[c];});var b2=longest(col);var pv2=state.linesBest[5+c],pp2=pv2?pv2.pts:0,bp2=b2?b2.word.length:0;if(b2&&bp2>pp2){state.score+=bp2-pp2;state.lineScores[5+c]=bp2;var cells2=Array.from({length:b2.word.length},function(_,i){return{r:b2.start+i,c:c};});state.linesBest[5+c]={word:b2.word,start:b2.start,pts:bp2,cells:cells2};nw.push({key:'C'+c,cells:cells2});}}
   return nw;
 }
-function doHL(state,pfx){
+
+/* FIX: doHL now takes full cell-id prefix e.g. 'cell-' or 'mpcell-' */
+function doHL(state,cellPfx){
   var cm={};
   state.linesBest.forEach(function(b,idx){if(!b)return;var d=idx<5?'rad':'kol';(b.cells||[]).forEach(function(c){var k=c.r+'-'+c.c;if(!cm[k])cm[k]=new Set();cm[k].add(d);});});
-  for(var r=0;r<5;r++)for(var c=0;c<5;c++){var el=document.getElementById(pfx+r+'-'+c);if(!el)continue;var d=cm[r+'-'+c];el.classList.remove('hi-row','hi-col','hi-both');if(d){var row=d.has('rad'),col=d.has('kol');if(row&&col)el.classList.add('hi-both');else if(row)el.classList.add('hi-row');else if(col)el.classList.add('hi-col');}}
+  for(var r=0;r<5;r++)for(var c=0;c<5;c++){var el=document.getElementById(cellPfx+r+'-'+c);if(!el)continue;var d=cm[r+'-'+c];el.classList.remove('hi-row','hi-col','hi-both');if(d){var row=d.has('rad'),col=d.has('kol');if(row&&col)el.classList.add('hi-both');else if(row)el.classList.add('hi-row');else if(col)el.classList.add('hi-col');}}
 }
-function doLbls(state,rp,cp){
-  for(var r=0;r<5;r++){var el=document.getElementById(rp+r);if(!el)continue;var b=state.linesBest[r];el.querySelector('.rl-pts').textContent=b?state.lineScores[r]+'p':'—';el.querySelector('.rl-word').textContent=b?b.word.toUpperCase():'';el.classList.toggle('lit',!!b);}
-  for(var c=0;c<5;c++){var el2=document.getElementById(cp+c);if(!el2)continue;var b2=state.linesBest[5+c];el2.querySelector('.cl-pts').textContent=b2?state.lineScores[5+c]+'p':'—';el2.querySelector('.cl-word').textContent=b2?b2.word.toUpperCase():'';el2.classList.toggle('lit',!!b2);}
+
+/* FIX: doLbls now takes full label-id prefixes e.g. 'row-label-' or 'mprow-label-' */
+function doLbls(state,rowPfx,colPfx){
+  for(var r=0;r<5;r++){var el=document.getElementById(rowPfx+r);if(!el)continue;var b=state.linesBest[r];el.querySelector('.rl-pts').textContent=b?state.lineScores[r]+'p':'—';el.querySelector('.rl-word').textContent=b?b.word.toUpperCase():'';el.classList.toggle('lit',!!b);}
+  for(var c=0;c<5;c++){var el2=document.getElementById(colPfx+c);if(!el2)continue;var b2=state.linesBest[5+c];el2.querySelector('.cl-pts').textContent=b2?state.lineScores[5+c]+'p':'—';el2.querySelector('.cl-word').textContent=b2?b2.word.toUpperCase():'';el2.classList.toggle('lit',!!b2);}
 }
+
+/* FIX: buildGrid now creates IDs consistently using pfx for ALL elements */
 function buildGrid(rowsId,colsId,state,pfx,fn){
   var cr=document.getElementById(colsId),re=document.getElementById(rowsId);if(!cr||!re)return;cr.innerHTML='';re.innerHTML='';
   cr.appendChild(Object.assign(document.createElement('div'),{className:'col-label-spacer'}));
@@ -480,11 +486,13 @@ function buildGrid(rowsId,colsId,state,pfx,fn){
   for(var r=0;r<5;r++){
     var rd=document.createElement('div');rd.className='grid-row';
     var rl2=document.createElement('div');rl2.className='row-label';rl2.id=pfx+'row-label-'+r;rl2.innerHTML='<span class="rl-pts">—</span><span class="rl-word"></span>';rd.appendChild(rl2);
-    for(var c2=0;c2<5;c2++){var cell=document.createElement('div');cell.className='cell';cell.id=pfx+'cell-'+r+'-'+c2;(function(rr,cc){cell.addEventListener('click',function(){fn(rr,cc);});})(r,c2);if(state.grid[r]&&state.grid[r][c2]){cell.textContent=state.grid[r][c2];cell.classList.add('filled');}rd.appendChild(cell);}
+    for(var c2=0;c2<5;c2++){var cell=document.createElement('div');cell.className='cell';cell.id=pfx+r+'-'+c2;(function(rr,cc){cell.addEventListener('click',function(){fn(rr,cc);});})(r,c2);if(state.grid[r]&&state.grid[r][c2]){cell.textContent=state.grid[r][c2];cell.classList.add('filled');}rd.appendChild(cell);}
     re.appendChild(rd);
   }
-  doHL(state,pfx+'cell-');doLbls(state,pfx+'row-label-',pfx+'col-label-');
+  doHL(state,pfx);
+  doLbls(state,pfx+'row-label-',pfx+'col-label-');
 }
+
 function buildResGrid(oid,state){
   var o=document.getElementById(oid);if(!o)return;o.innerHTML='';
   var cm={};state.linesBest.forEach(function(b,idx){if(!b)return;var d=idx<5?'rad':'kol';(b.cells||[]).forEach(function(c){var k=c.r+'-'+c.c;if(!cm[k])cm[k]=new Set();cm[k].add(d);});});
@@ -500,16 +508,20 @@ function buildResGrid(oid,state){
 var sg={};
 function startSolo(){
   sg={grid:Array.from({length:5},function(){return new Array(5).fill('');}),cur:rl(),score:0,placed:0,over:false,lineScores:new Array(10).fill(0),linesBest:new Array(10).fill(null),foundWords:[]};
-  buildGrid('grid-rows','col-labels-row',sg,'cell-',placeSolo);
+  /* FIX: use 'solo-' prefix so cell IDs = 'solo-0-0', labels = 'solo-row-label-0' etc */
+  buildGrid('grid-rows','col-labels-row',sg,'solo-',placeSolo);
   renderSolo();nav('screen-game');
 }
 function placeSolo(row,col){
   if(sg.over||sg.grid[row][col]!=='')return;
   sg.grid[row][col]=sg.cur;sg.placed++;
-  var cell=document.getElementById('cell-'+row+'-'+col);
-  cell.textContent=sg.cur;cell.classList.add('filled','placing');
-  setTimeout(function(){cell.classList.remove('placing');},420);
-  var nw=calcSc(sg);doHL(sg,'cell-');sg.cur=rl();renderSolo();
+  var cell=document.getElementById('solo-'+row+'-'+col);
+  if(cell){cell.textContent=sg.cur;cell.classList.add('filled','placing');setTimeout(function(){cell.classList.remove('placing');},420);}
+  var nw=calcSc(sg);
+  /* FIX: use correct prefixes matching buildGrid */
+  doHL(sg,'solo-');
+  doLbls(sg,'solo-row-label-','solo-col-label-');
+  sg.cur=rl();renderSolo();
   nw.forEach(function(w){var i=sg.foundWords.findIndex(function(f){return f.key===w.key;});if(i!==-1)sg.foundWords.splice(i,1);sg.foundWords.push(w);});
   if(sg.placed>=25)setTimeout(endSolo,700);
 }
@@ -519,7 +531,7 @@ function renderSolo(){
   var se=document.getElementById('total-score');
   var prev=parseInt(se.textContent)||0;se.textContent=sg.score;
   if(sg.score>prev){se.classList.remove('bump');void se.offsetWidth;se.classList.add('bump');setTimeout(function(){se.classList.remove('bump');},380);}
-  tx('tiles-left',25-sg.placed);doLbls(sg,'row-label-','col-label-');
+  tx('tiles-left',25-sg.placed);
 }
 function endSolo(){
   sg.over=true;var p=loadP();p.games++;if(sg.score>p.bestScore)p.bestScore=sg.score;
@@ -577,7 +589,8 @@ function startMpGame(gs){
   mp.shown=false;
   var on=(gs[ok]&&gs[ok].name)||'Motståndare';
   tx('opp-name',on);tx('mp-title','vs '+on);
-  buildGrid('mp-grid-rows','mp-col-row',mp.myState,'mpcell-',placeMp);
+  /* FIX: use 'mp-' prefix for multiplayer grid */
+  buildGrid('mp-grid-rows','mp-col-row',mp.myState,'mp-',placeMp);
   nav('screen-mp-game');
   if(mp.unsub){mp.unsub();mp.unsub=null;}
   mp.unsub=fbOn('games/'+mp.code,onGU);
@@ -642,9 +655,11 @@ function placeMp(row,col){
     mp.myState.lineScores=(md.lineScores||new Array(10).fill(0)).slice();
     mp.myState.linesBest=(md.linesBest||new Array(10).fill(null)).map(function(b){return b?Object.assign({},b):null;});
     var nw=calcSc(mp.myState);
-    var cell=document.getElementById('mpcell-'+row+'-'+col);
+    var cell=document.getElementById('mp-'+row+'-'+col);
     if(cell){cell.textContent=l;cell.classList.add('filled','placing');setTimeout(function(){cell.classList.remove('placing');},420);}
-    doHL(mp.myState,'mpcell-');doLbls(mp.myState,'mprow-label-','mpcol-label-');
+    /* FIX: use correct 'mp-' prefix for highlights and labels */
+    doHL(mp.myState,'mp-');
+    doLbls(mp.myState,'mp-row-label-','mp-col-label-');
     nw.forEach(function(w){var i=mp.myState.foundWords.findIndex(function(f){return f.key===w.key;});if(i!==-1)mp.myState.foundWords.splice(i,1);mp.myState.foundWords.push(w);});
     tx('mp-score',mp.myState.score);tx('mp-left',25-mp.myState.placed);
     var um=Object.assign({},md,{grid:mp.myState.grid.map(function(r){return r.slice();}),score:mp.myState.score,placed:mp.myState.placed,letter:null,lineScores:mp.myState.lineScores.slice(),linesBest:mp.myState.linesBest.map(function(b){return b?Object.assign({},b):null;})});
@@ -658,7 +673,7 @@ function placeMp(row,col){
 }
 function syncGrid(md){
   if(!md||!md.grid)return;
-  for(var r=0;r<5;r++)for(var c=0;c<5;c++){var s=(md.grid[r]&&md.grid[r][c])||'';if(s&&!mp.myState.grid[r][c]){var el=document.getElementById('mpcell-'+r+'-'+c);if(el){el.textContent=s;el.classList.add('filled');}mp.myState.grid[r][c]=s;}}
+  for(var r=0;r<5;r++)for(var c=0;c<5;c++){var s=(md.grid[r]&&md.grid[r][c])||'';if(s&&!mp.myState.grid[r][c]){var el=document.getElementById('mp-'+r+'-'+c);if(el){el.textContent=s;el.classList.add('filled');}mp.myState.grid[r][c]=s;}}
 }
 function showMpResult(gs){
   var mk=mp.role,ok=mp.role==='host'?'guest':'host';
@@ -695,7 +710,7 @@ function leaveMatch(){
   }
 }
 
-/* ── BOOT — no Firebase dependency ── */
+/* ── BOOT ── */
 window.addEventListener('DOMContentLoaded', function() {
   var bar=document.getElementById('loading-bar');
   var msg=document.getElementById('loading-msg');
